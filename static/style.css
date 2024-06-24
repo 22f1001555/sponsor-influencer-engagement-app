@@ -1,0 +1,46 @@
+*{
+    margin: 0px;
+
+}
+
+#container, #panel{
+    border: 2px solid rgb(101, 99, 99);
+    border-radius: 25px;
+    padding: 0px;
+}
+
+#panel{
+    width: 80%;
+    margin: auto;
+    height: 800px;
+}
+
+#input-form{
+    border: 2px solid rgb(115, 115, 118);
+    width: 400px;
+    height: 400px;
+    margin: auto;
+    margin-top: 10px;
+    border-radius: 20px;
+    margin-bottom: 10px;
+}
+
+#heading{
+    height: 75px; 
+    padding: 10px; 
+    text-align: center;
+    margin: 0px
+}
+.mb-3{
+    padding: 12px;
+    margin: 0px 5px 0px 15px;
+}
+#image{
+    margin-left: 1px;
+    margin: auto;
+    height: 100px;
+    width: 150px;
+    padding-bottom: 10px;
+}
+
+
