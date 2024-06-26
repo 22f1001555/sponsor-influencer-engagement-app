@@ -7,24 +7,26 @@
 </head>
 <body>
     <div id="image">
-        <a href="/templates/index.html"><img src="/static/logo.png" class="card-img-top"></a>
+        <a href="/"><img src="/static/logo.png" class="card-img-top"></a>
     </div>
     <br>
     <!-- <div id="container"> -->
             <div id="input-form">
                 <h2 id="heading">Sponsor Login</h2>
+                <form action="/sponsor/login" method='POST'>
                 <div class="mb-3">
                     <label for="username" class="form-label">User Name</label>
-                    <input type="text" class="form-control" id="username" placeholder="user123" required>
+                    <input type="text" class="form-control" name="username" placeholder="user123" required>
                 </div>
                 <div class="mb-3">
                     <label for="pwd" class="form-label">Password</label>
-                    <input type="password" class="form-control" id="pwd" placeholder="1234" required>
+                    <input type="password" class="form-control" name="pwd" placeholder="1234" required>
                 </div>
                 <div class="mb-3">
                     <button type="submit" class="btn btn-primary mb-3">Login</button>  
+                </form>
                     not a user?
-                    <a href="sponsor_reg.html">Register</a>
+                    <a href="/sponsor/register">Register</a>
                 </div>
             </div>
     </div>
