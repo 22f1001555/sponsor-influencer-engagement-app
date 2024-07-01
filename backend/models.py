@@ -12,8 +12,8 @@ class Admin(db.Model):
     admin_id=db.Column(db.Integer,primary_key=True,autoincrement=True)
     username=db.Column(db.String(),nullable=False,unique=True)
     password=db.Column(db.String(),nullable=False)
-    sponsors=db.relationship('Campaign',back_populates='admin')
     influencers=db.relationship('Influencer',back_populates='admin')
+    sponsors=db.relationship('Sponsor',back_populates='admin')
     campaigns=db.relationship('Campaign',back_populates='admin')
 
 
@@ -27,7 +27,9 @@ class Sponsor(db.Model):
     company_name=db.Column(db.String(),nullable=False,unique=True)
     industry=db.Column(db.String(),nullable=False)
     budget=db.Column(db.Numeric(10, 2),nullable=False)
+    admin_id=db.Column(db.Integer,db.ForeignKey('admin.admin_id'),nullable=False,default=1)
     campaigns=db.relationship('Campaign',back_populates='sponsors')
+    admin=db.relationship('Admin',back_populates='sponsors')
 
 class Influencer(db.Model):
 
@@ -36,32 +38,37 @@ class Influencer(db.Model):
     password=db.Column(db.String(),nullable=False)
     f_name=db.Column(db.String(),nullable=False)
     l_name=db.Column(db.String(),nullable=False)
+    admin_id=db.Column(db.Integer,db.ForeignKey('admin.admin_id'),nullable=False,default=1)
     category_id=db.Column(db.String(),db.ForeignKey("category.cat_id"),nullable=False)
     niche_id=db.Column(db.String(),db.ForeignKey("niche.niche_id"),nullable=False)
     social_media=db.Column(db.String(),nullable=False)
     subs=db.Column(db.Integer,nullable=False)
     category=db.relationship('Category', back_populates='influencers')
     niche = db.relationship('Niche', back_populates='influencers')
+    admin=db.relationship('Admin', back_populates='influencers')
+    
 
 class Campaign(db.Model):
 
     campaign_id=db.Column(db.Integer,primary_key=True,autoincrement=True)
     sponsor_id=db.Column(db.Integer,db.ForeignKey('sponsor.sponsor_id'),nullable=False)
+    admin_id=db.Column(db.Integer,db.ForeignKey('admin.admin_id'),nullable=False,default=1)
     name=db.Column(db.String(),nullable=False)
     category_id=db.Column(db.String(),db.ForeignKey("category.cat_id"),nullable=False)
     start_date=db.Column(db.Date,nullable=False)
     end_date = db.Column(db.Date, nullable=True)
     budget = db.Column(db.Numeric(10, 2), nullable=False)
-    status = db.Column(db.String(), nullable=False)
-    visibility=status = db.Column(db.String(50), dafault="public")
+    #status = db.Column(db.String(), nullable=False)
+    visibility= db.Column(db.String(50))
     goals=db.Column(db.String())
     categories=db.relationship('Category',back_populates='campaigns')
     sponsors=db.relationship('Sponsor',back_populates='campaigns')
-
+    admin=db.relationship('Admin',back_populates='campaigns')
+    
 class Adrequest(db.Model):
     ad_id=db.Column(db.Integer,primary_key=True,autoincrement=True)
-    campaign_id=db.column(db.Integer,db.ForeignKey("campaign.campaign_id"),nullable=False)
-    influencer_id=db.column(db.Integer,db.ForeignKey("influencer.influencer_id"),nullable=False)
+    campaign_id=db.Column(db.Integer,db.ForeignKey("campaign.campaign_id"),nullable=False)
+    influencer_id=db.Column(db.Integer,db.ForeignKey("influencer.influencer_id"),nullable=False)
     content=db.Column(db.String(), nullable=False)
     niche_id=db.Column(db.String(),db.ForeignKey("niche.niche_id"),nullable=False)
     status=db.Column(db.String(), nullable=False)
@@ -74,6 +81,7 @@ class Category(db.Model):
     name=db.Column(db.String(), nullable=False,unique=True)
     campaigns=db.relationship('Campaign',back_populates='categories')
     influencers = db.relationship('Influencer', back_populates='category')
+    niches= db.relationship('Niche', back_populates='category')
 
 class Niche(db.Model):
 
@@ -82,4 +90,4 @@ class Niche(db.Model):
     cat_id=db.Column(db.Integer,db.ForeignKey("category.cat_id"),nullable=False)
     influencers = db.relationship('Influencer', back_populates='niche')
     adrequests=db.relationship('Adrequest',back_populates='niche')
-    
+    category=db.relationship('Category', back_populates='niches')

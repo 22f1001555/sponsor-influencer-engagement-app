@@ -12,20 +12,22 @@
     </div>
     <br>
     <!-- <div id="container"> -->
+            <form action="/admin/login" method="POST" id="admin-login-form">
             <div id="input-form">
                 <h2 id="heading">Login</h2>
                 <div class="mb-3">
                     <label for="username" class="form-label">User Name</label>
-                    <input type="text" class="form-control" id="username" placeholder="user123" required>
+                    <input type="text" class="form-control" name="username" placeholder="user123" required>
                 </div>
                 <div class="mb-3">
                     <label for="pwd" class="form-label">Password</label>
-                    <input type="password" class="form-control" id="pwd" placeholder="1234" required>
+                    <input type="password" class="form-control" name="pwd" placeholder="1234" required>
                 </div>
                 <div class="mb-3">
-                    <button type="submit" class="btn btn-primary mb-3">Login</button>  
+                    <button type="submit" class="btn btn-primary mb-3" value="Submit">Login</button>  
                 </div>
             </div>
+            </form>
         </div>
     
 </body>

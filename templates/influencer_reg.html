@@ -14,61 +14,72 @@
     
     <div id="container" style="margin: 5px 300px 5px 300px; border: 2px solid grey; padding: 2em 2em 0em 2em;border-radius: 20px;" >
         <h2 id="heading">Influencer Registration</h2>
+               <form action="/influencer/register" method="POST">
+                <div class="row g-3">
+                    <div class="col-sm-7">
+                      <input type="text" class="form-control" placeholder="First Name" aria-label="f_name" name="f_name">
+                    </div>
+                    <div class="col-sm">
+                      <input type="text" class="form-control" placeholder="Last name" aria-label="l_name" name="l_name">
+                    </div>
+                </div>
+                <br>
+                <div class="row g-3">
+                    <div class="col-sm-7">
+                      <input type="text" class="form-control" placeholder="User Name" aria-label="user_name" name="username">
+                    </div>
+                    <div class="col-sm">
+                      <input type="password" class="form-control" placeholder="Password" aria-label="pwd" name="pwd">
+                    </div>
+                </div>
+                <br>
                 
-                <div class="row g-3">
-                    <div class="col-sm-7">
-                      <input type="text" class="form-control" placeholder="First Name" aria-label="f_name">
-                    </div>
-                    <div class="col-sm">
-                      <input type="text" class="form-control" placeholder="Last name" aria-label="l_name">
-                    </div>
+                <div class="form-group">
+                  <label for="category">Category :</label>
+                  <select id="category"  name="category">
+                    {%for cat in category%}
+                    <option value="{{cat.cat_id}}">{{cat.name}}</option>
+                    {%endfor%}
+                  </select>
                 </div>
                 <br>
-                <div class="row g-3">
-                    <div class="col-sm-7">
-                      <input type="text" class="form-control" placeholder="User Name" aria-label="user_name">
-                    </div>
-                    <div class="col-sm">
-                      <input type="password" class="form-control" placeholder="Password" aria-label="pwd">
-                    </div>
-                </div>
-                <br>
-                <div>
-                    <div class="col-sm">
-                        <input type="text" class="form-control" placeholder="category" aria-label="cat">
-                    </div>
-                </div>
-                <br>
-                <div>
-                    <div class="col-sm">
-                        <input type="text" class="form-control" placeholder="Niche" aria-label="niche">
-                    </div>
+                <div class="form-group">
+                  
+                  <label for="niche">Niche :</label>
+                  <select id="niche" name="niche" >
+                    {%for cat in category%}
+                      {%for niche in cat.niches%}
+                        <option value="{{niche.niche_id}}">{{niche.name}}</option>
+                      {%endfor%}
+                    {%endfor%}
+                  </select>
                 </div>
                 <br>
                 <div>
                     <label for="social_media" >Social Media Presence : </label>
                     <div class="form-check form-check-inline" >
-                        <input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1">
-                        <label class="form-check-label" for="inlineCheckbox1">Instagram</label>
+                        <input class="form-check-input" type="checkbox" id="instagram" value="instagram" name="social">
+                        <label class="form-check-label" for="instagram">Instagram</label>
                       </div>
                       <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox" id="inlineCheckbox2" value="option2">
-                        <label class="form-check-label" for="inlineCheckbox2">Youtube</label>
+                        <input class="form-check-input" type="checkbox" id="Youtube" value="Youtube" name="social">
+                        <label class="form-check-label" for="Youtube">Youtube</label>
                       </div>
                       <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox" id="inlineCheckbox3" value="option3" >
-                        <label class="form-check-label" for="inlineCheckbox3">Twitter</label>
+                        <input class="form-check-input" type="checkbox" id="Twitter" value="Twitter" name="social" >
+                        <label class="form-check-label" for="Twitter">Twitter</label>
                       </div>
                       <br><br>
                       <div>
                         <label for="reach">Number of Subscribers: </label>
-                        <input type="number" name="reach" >
+                        <input type="number" name="reach" min="100" step="100" >
                       </div>
                 </div>
     
                 <div class="col-12" style="padding: 2em .2em;">
-                    <button type="submit" class="btn btn-primary">Sign in</button>
+                    <button type="submit" class="btn btn-primary" value="Submit">Sign in</button>
                   </div>
+                </form> 
     </div>
     
 </body>

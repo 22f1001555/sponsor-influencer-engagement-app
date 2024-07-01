@@ -5,7 +5,7 @@ app=None
 def init_app():
     adviser_app=Flask(__name__)
     adviser_app.debug=True
-    adviser_app.config['SQLALCHEMY_DATABASE_URI']="sqlite:///adviserdatabase.sqlite3"
+    adviser_app.config['SQLALCHEMY_DATABASE_URI']="sqlite:///adviser_database.sqlite3"
     db.init_app(adviser_app)
     adviser_app.app_context().push()
 

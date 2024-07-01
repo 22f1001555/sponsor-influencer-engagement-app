@@ -14,22 +14,23 @@
     
     <div id="container" style="margin: 5px 300px 5px 300px; border: 2px solid grey; padding: 1em 2em 0em 2em;border-radius: 20px;" >
         <h2 id="heading">Sponsor Registration</h2>
+              <form action="/sponsor/register" method="POST">
                 <div style="padding-left:0em;">
                     <div class="row g-3">
                         <div class="col-sm-7">
-                          <input type="text" class="form-control" placeholder="User Name" aria-label="username">
+                          <input type="text" class="form-control" placeholder="User Name" aria-label="username" name="username" required>
                         </div>
                         <div class="col-sm">
-                          <input type="password" class="form-control" placeholder="Password" aria-label="pwd">
+                          <input type="password" class="form-control" placeholder="Password" aria-label="pwd" name="pwd" required>
                         </div>
                     </div>
                     <br>
                     <div class="row g-3">
                         <div class="col-sm-7">
-                          <input type="text" class="form-control" placeholder="Company Name" aria-label="c_name">
+                          <input type="text" class="form-control" placeholder="Company Name" aria-label="c_name" name="company_name" required>
                         </div>
                         <div class="col-sm">
-                          <input type="text" class="form-control" placeholder="Industry" aria-label="industry">
+                          <input type="text" class="form-control" placeholder="Industry" aria-label="industry" name="industry" required>
                         </div>
                     </div>
                 <br>
@@ -39,14 +40,16 @@
                 <br>
                 <div class="row g-3">
                     <div class="col-sm-7">
-                      <input type="number" class="form-control" placeholder="Budget" aria-label="budget" required>
+                      <input type="number" class="form-control" placeholder="Budget" aria-label="budget" name="budget" min="1000" step="1000" required>
                     </div>
                 </div>
             </div>
-    
+            
+            
                 <div class="col-12" style="padding: 2em 0.2em;">
-                    <button type="submit" class="btn btn-primary">Sign in</button>
+                    <button type="submit" class="btn btn-primary" value="Submit">Sign in</button>
                   </div>
+              </form>
     </div>
     
 </body>
