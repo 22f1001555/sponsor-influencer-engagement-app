@@ -1,120 +1,52 @@
 from flask import Flask,render_template,redirect,request,url_for
 from flask import current_app as app
 from .models import *
+from .users import *
+from .campaigns import *
 from datetime import datetime
 
-@app.route('/')                                                 #Index page
-def home():
-    return render_template('index.html')
 
 
-@app.route('/admin/login', methods=['GET','POST'])                 #Admin login
-def ad_login():
-    if request.method=='GET':
-        return render_template('admin_login.html')
-    else:
-        username=request.form.get('username')
-        password=request.form.get('pwd')
-        user=Admin.query.filter_by(username=username).first()
-        if not(user):
-            return 'user not found'
-        else:
-            if password==user.password:
-                return render_template('admin_dashboard.html')
-            else:
-                return 'incorrect password,try again'
-
-
-@app.route('/sponsor/register',methods=['GET','POST'])              #sponsor registration
-def sp_register():
-    if request.method=='GET':
-        return render_template('sponsor_reg.html')
-    else:
-        username=request.form.get('username')
-        user=Sponsor.query.filter_by(username=username).first()
-        if user!=None:
-            if user.username:
-                return '<h3 style="text-allign:center">user already exists</h3><h3>try using a different user name</h3>'
-        password=request.form.get('pwd')
-        company_name=request.form.get('company_name')
-        budget=request.form.get('budget')
-        industry=request.form.get('industry')
-        new_sponsor=Sponsor(username=username,password=password,company_name=company_name,budget=budget,industry=industry)
-        db.session.add(new_sponsor)
-        db.session.commit()
-        return redirect('/sponsor/login')
-
-
-
-@app.route('/sponsor/login',methods=['GET','POST'])                 # sponsor login
-def sp_login():
-    if request.method=='GET':
-        return render_template('sponsor_login.html')
-    else:
-        username=request.form.get('username')
-        password=request.form.get('pwd')
-        user=Sponsor.query.filter_by(username=username).first()
-        if not(user):
-            return 'user not found'
-        else:
-            if password==user.password:
-                return redirect(url_for('sp_dash',username=user.username))
-            else:
-                return 'incorrect password,try again',404
     
-@app.route('/sponsor/<username>/dashboard',methods=['GET','POST'])              # sponsor dashboard
-def sp_dash(username):
-    if request.method=='GET':
-        user = Sponsor.query.filter_by(username=username).first()
-        return render_template('sponsor_dash.html',user=user)
-
-@app.route('/<username>/campaigns',methods=['GET','POST'])                  #campagns list of sponsors
-def campaigns(username):
-    
-    campaign_user=Sponsor.query.filter_by(username=username).first()
-    if request.method=='GET':
-        return render_template('campaigns_page.html',user=campaign_user)
-
-@app.route('/<username>/new_campaign',methods=['GET','POST'])               #create new campaign
-def new_campaign(username):
-    user=Sponsor.query.filter_by(username=username).first()
-    cat=Category.query.all()
-    if request.method=='GET':
-        return render_template('new_campaign.html',user=user,cat=cat)
-    else:
-        title=request.form.get('title')
-        sponsor_id=request.form.get('sponsor_id')
-        category=request.form.get('category')
-        start=request.form.get('start')
-        end=request.form.get('end')
-        budget=request.form.get('budget')
-        visibility=request.form.get('visibility')
-        goals=request.form.get('goals')
-        start_date=datetime.strptime(start, '%Y-%m-%d')
-        end_date=datetime.strptime(end, '%Y-%m-%d')
-
-        if end_date<=start_date:
-            return "End date must be after start date", 400
-        
-        new_campaign=Campaign(name=title,sponsor_id=sponsor_id,category_id=category,start_date=start_date.date(),
-                              end_date=end_date.date(),budget=budget,visibility=visibility,goals=goals)
-        db.session.add(new_campaign)
-        db.session.commit()
-        return redirect(url_for('campaigns',username=username))
-
-@app.route('/del/<int:id><username>',methods=['POST'])                              # delete a campaign
-def del_camp(id,username): 
-    if request.method=='POST':
-        camp=Campaign.query.filter_by(campaign_id=id).first()
-        db.session.delete(camp)
-        db.session.commit()
-        return redirect(url_for('campaigns',username=username))
-
-@app.route('/campaign_details/<int:id>')                                           # campaign details
-def camp_details(id):
+@app.route('/<username>/<int:id>/new_ad',methods=['GET','POST'])               #create add
+def new_ad(id,username):
     camp=Campaign.query.filter_by(campaign_id=id).first()
-    return render_template('campaign_details.html',campaign=camp)
+    niches=Niche.query.filter_by(cat_id=camp.category_id).all()
+    infs=Influencer.query.filter_by(category_id=camp.category_id).all()
+    if request.method=='GET':
+        return render_template('new_ad.html',camp=camp,infs=infs,niches=niches,username=username)
 
+    else:
+        name=request.form.get('name')
+        content=request.form.get('content')
+        campaign_id=request.form.get('campaign_id')
+        influencer_id=request.form.get('influencer_id')
+        niche_id=request.form.get('niche_id')
+        budget=float(request.form.get('budget'))
+
+        camp.budget=float(camp.budget)-budget
+        if float(camp.budget)>=0:
+
+
+            new_ad=Adrequest(name=name,content=content,campaign_id=campaign_id,
+                            influencer_id=influencer_id,niche_id=niche_id,budget=budget)
+            
+            db.session.add(new_ad)
+            db.session.commit()
+            return redirect(url_for('camp_details',id=id,username=username))
+        else:
+            return 'Insufficient budget,add more budget to the campaign',404
+
+@app.route('/<username>/<int:camp_id>/<int:ad_id>') 
+def ad_details(camp_id,ad_id,username):
+    ad=Adrequest.query.filter_by(ad_id=ad_id).first()
+    inf=Influencer.query.filter_by(influencer_id=ad.influencer_id).first()
+    
+    if ad.status=='Accepted':
+        temp_stat='Pay Now'
+        return render_template('ad_details.html',ad=ad,inf=inf,status=temp_stat)
+
+    return render_template('ad_details.html',ad=ad,inf=inf)
 
 
 
