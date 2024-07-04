@@ -9,7 +9,7 @@
 </head>
 <body>
     <h1 id="heading" style="color: darkgreen;">Ad Request Id : {{ad.ad_id}}</h1>
-<div id="container">
+<div id="input-form">
     
     <p>Ad title: {{ad.name}}</p>
     <p>Campagin Name: {{ad.campaign.name}}</p>
@@ -19,8 +19,11 @@
     <p>Budget: {{ad.budget}}</p>
     <p>Requested Influencer: {{inf.f_name}} {{inf.l_name}}</p>
     <p>Status: {{ad.status}}</p>
+
+<form action="{{url_for('camp_details',id=ad.campaign.campaign_id,username=username)}}" method="GET">
+<button type="submit" class="btn btn-primary">Back</button>
+</form>
+<a href="{{url_for('payment',username=username,camp_id=camp_id,ad_id=ad.ad_id)}}" style="display: inline-block; padding-left: 7rem;"><h5>{{status}}</h5></a>
 </div>
-<div id="heading"><a href="..."><h5>{{status}}</h5></a></div>
-    
 </body>
 </html>

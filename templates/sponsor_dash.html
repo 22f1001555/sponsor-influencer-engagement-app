@@ -45,52 +45,94 @@
           </ul>
         </div>
     </nav>
-    <div class="mb-3">
-      <h3>Welcome Back, {{user.company_name}}</h3>
+    <div style="margin: 2rem 0rem 5rem 1rem;">
+      <h1>Welcome, <span style="color: blue;">{{user.company_name}}</span></h1>
+      <h5 style="padding-top: 1rem;">Available Budget: {{user.budget}}</h5>
     </div>
 
     <div>
-      <h5>Active Campaigns :</h5>
-      <p></p>
-      <ul class="list-group" >
-       <span></span> <li class="list-group-item">An item</li></span>
-        <span><button type="button" class="btn btn-warning">view</button></span>
-        <li class="list-group-item">A second item</li>
+      <h5 style="margin: 0rem 0rem 2rem 1rem;">Active Campaigns :</h5>
+      <div id="container" style="border: 1px ;">
+    {% for camp in user.campaigns %}
+    {%if camp.status=='pending'%}
+        {% set ns = namespace(completed=0, total=0) %}
         
-        <li class="list-group-item">A third item</li>
-        <li class="list-group-item">A fourth item</li>
-        <li class="list-group-item">And a fifth one</li>
-      </ul>
-    <p><br><br><br></p>
-    <div>
-      <h5>New Requests :</h5>
-    </div>
-    <div id="heading">
-      <div class="container text-center">
-        <div class="row">
-          <div class="col">
-            <div class="card" style="width: 18rem;">
-              <div class="card-body">
-                <h5 class="card-title">Campaign 01(comes from campaign title)(edit)</h5>
-                <h6 class="card-subtitle mb-2 text-body-secondary">(edit)</h6>
-                <p class="card-text">comes from campaign description(edit)</p>
-                <p class="card-text">Progress 50%(edit)</p>
-                <button type="button" class="btn btn-warning">view</button>
-                <button type="button" class="btn btn-success">Accept</button>
-                <button type="button" class="btn btn-danger">Reject</button>
+        {% for ad in camp.ads %}
+            {% if ad.status == 'completed' %}
+                {% set ns.completed = ns.completed + 1 %}
+            {% endif %}
+            {% set ns.total = ns.total + 1 %}
+        {% endfor %}
+        
+        {% set progress = 0 if ns.total == 0 else (ns.completed * 100) / ns.total %}
+              
+              
+              <ul class="list-group">
+                  <span style="display: inline-flex;">
+                      <li class="list-group-item" style="display: flex;width: 100%;">
+                          {{ camp.campaign_id }}. {{ camp.name }} | Progress: {{ progress | round(2) }}%|
+                      </li>
+                      <form action="{{url_for('camp_details',username=user.username,id=camp.campaign_id)}}" method="GET" style="display: flex;">
+                      <button type="submit" class="btn btn-primary">view</button>
+                      </form>
+                      <!-- <button type="button" class="btn btn-warning">edit</button>
+                      <button type="button" class="btn btn-danger">delete</button> -->
+                  </span>
+              </ul>
+              
+            {%endif%}
+            {% endfor %}
+          </div>
+      
+            <div>
+          <h5 style="margin: 0rem 0rem 2rem 1rem;">Completed Campaigns :</h5>
+            <div id="container" style="border: 1px ;">
+          {% for camp in user.campaigns %}
+          {%if camp.status=='completed'%}
+        {% set ns = namespace(completed=0, total=0) %}
+        
+        {% for ad in camp.ads %}
+            {% if ad.status == 'completed' %}
+                {% set ns.completed = ns.completed + 1 %}
+            {% endif %}
+            {% set ns.total = ns.total + 1 %}
+        {% endfor %}
+        
+        {% set progress = 0 if ns.total == 0 else (ns.completed * 100) / ns.total %}
+            
+            
+              <ul class="list-group">
+                  <span style="display: inline-flex;">
+                      <li class="list-group-item" style="display: flex;width: 100%;">
+                          {{ camp.campaign_id }}. {{ camp.name }} | Progress: {{ progress | round(2) }}%|
+                      </li>
+                      <form action="{{url_for('camp_details',username=user.username,id=camp.campaign_id)}}" method="GET" style="display: flex;">
+                      <button type="submit" class="btn btn-primary">view</button>
+                      </form>
+                      <!-- <button type="button" class="btn btn-warning">edit</button>
+                      <button type="button" class="btn btn-danger">delete</button> -->
+                  </span>
+              </ul>
+              
+            {%endif%}
 
-              </div>
-            </div>
-          </div>
-          <div class="col"></div>
-            Column
-          </div>
-          <div class="col">
-            Column
-          </div>
+          {% endfor %}
         </div>
       </div>
-    </div>
+      <div>
+        <h5 style="margin: 0rem 0rem 2rem 1rem;">New Requests:</h5>
+          <div id="container" style="border: 1px ;">
+
+          </div>
+      </div>
+
+
+
+
+
+
+       
+   
 
 
 </body>

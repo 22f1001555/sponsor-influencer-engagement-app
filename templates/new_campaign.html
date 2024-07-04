@@ -42,7 +42,7 @@
                   <div class="row mb-3">
                     <label for="inputPassword3" class="col-sm-2 col-form-label">Budget :</label>
                     <div class="col-sm-10">
-                      <input type="number" class="form-control" id="inputPassword3" name="budget" min="100" max="{{user.budget}}"  required>
+                      <input type="number" class="form-control" id="inputPassword3" name="budget" min="1"  required>
                     </div>
                   </div>
                 <fieldset class="row mb-3">
@@ -69,12 +69,12 @@
                 <input type="hidden" name="sponsor_id" value="{{user.sponsor_id }}">
                 <div id="heading">
                 <button type="submit" class="btn btn-success" value="Submit" style="display: inline;">Add</button>
-            
+              </form>
                 <form action="{{url_for('campaigns',username=user.username)}}" style="display: inline;">
                     <button type="submit" class="btn btn-danger" style="display: inline;">Cancel</button>   
                 </form>
                   </div>
-    </form>
+    
 </div>
 </body>
 </html>

@@ -58,9 +58,11 @@
     <p>End Date: {{camp.end_date}}</p>
     <p>Budget: {{camp.budget}}</p>
     <p>Goals: {{camp.goals}}</p>
+    <p>Status: {{camp.status}}</p>
 </div>
-<!-- LIST OF ADDS -->
-<h2 style="color: blue; padding: 2rem;">Ad Details : </h2>
+<!-- LIST OF ACTIVE ADDS -->
+ {%if camp.status!='completed'%}
+<h2 style="color: blue; padding: 2rem;">Active Ads : </h2>   
 <div id="campaign">
 <div class="row row-cols-1 row-cols-md-3 g-4">
     <div class="col">
@@ -74,6 +76,7 @@
       </div>
     </div>
     {% for ad in camp.ads %}
+    {%if ad.status!='completed'%}
     <div class="col">
       <div class="card h-100" id="cards">
         <img src="/static/campaign.png" class="card-img-top" alt="...">
@@ -84,19 +87,43 @@
         <form action="{{url_for('ad_details',camp_id=camp.campaign_id,ad_id=ad.ad_id,username=user.username)}}" method="GET" style="display: inline; margin-left: 0.5rem;">
             <button class="btn btn-info" type="submit" >View</button> 
         </form>
-        <form action="{{url_for('update_camp',id=camp.campaign_id,username=user.username)}}" method="GET" style="display: inline; margin-left: 0.35rem; margin-right: 0.25rem;">
+        <form action="{{url_for('update_ad',camp_id=camp.campaign_id,username=user.username,ad_id=ad.ad_id)}}" method="GET" style="display: inline; margin-left: 0.35rem; margin-right: 0.25rem;">
             <button class="btn btn-warning" type="submit" >Update</button> 
         </form>
-        <form action="{{url_for('del_camp',username=user.username,id=camp.campaign_id)}}" method="GET" style="display: inline; margin: 1px;" >
+        <form action="{{url_for('del_ad',username=user.username,ad_id=ad.ad_id,camp_id=camp.campaign_id)}}" method="GET" style="display: inline; margin: 1px;" >
             <button  class="btn btn-danger" type="Submit">Delete</button>    
         </form>
         
       </div>
     </div>
+    {%endif%}
     {%endfor%}
   </div>
 </div>
+{%endif%}
 
+<!-- COMPLETED ADS -->
+<h2 style="color: blue; padding: 2rem;">Completed Ads : </h2>   
+<div id="campaign">
+<div class="row row-cols-1 row-cols-md-3 g-4">
+    {% for ad in camp.ads %}
+    {%if ad.status=='completed'%}
+    <div class="col">
+      <div class="card h-100" id="cards">
+        <img src="/static/campaign.png" class="card-img-top" alt="...">
+        <div class="card-body">
+          <h5 class="card-title" style="text-align: center;">{{ad.name}}</h5>
+          <p class="card-text" style="text-align: center;">|| {{ad.niche.name}} || {{ad.budget}} || {{ad.status}} ||</p>
+        </div>
+        <form action="{{url_for('ad_details',camp_id=camp.campaign_id,ad_id=ad.ad_id,username=user.username)}}" method="GET" style="display: inline; margin-left: 5rem;">
+            <button class="btn btn-info" type="submit" >View</button> 
+        </form>
+      </div>
+    </div>
+    {%endif%}
+    {%endfor%}
+  </div>
+</div>
 
     
 </body>

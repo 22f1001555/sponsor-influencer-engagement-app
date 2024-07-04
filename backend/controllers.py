@@ -3,6 +3,7 @@ from flask import current_app as app
 from .models import *
 from .users import *
 from .campaigns import *
+from .payment import *
 from datetime import datetime
 
 
@@ -36,17 +37,50 @@ def new_ad(id,username):
             return redirect(url_for('camp_details',id=id,username=username))
         else:
             return 'Insufficient budget,add more budget to the campaign',404
+        
+@app.route('/<username>/<int:camp_id>/<int:ad_id>/update',methods=['GET','POST'])       #update ad
+def update_ad(ad_id,camp_id,username):
+    ad=Adrequest.query.filter_by(ad_id=ad_id).first()
+    camp=Campaign.query.filter_by(campaign_id=camp_id).first()
+    niches=Niche.query.filter_by(cat_id=camp.category_id).all()
+    infs=Influencer.query.filter_by(category_id=camp.category_id).all()
+    if request.method=='GET':
+        return render_template('update_ad.html',ad=ad,camp=camp,infs=infs,
+                               niches=niches,username=username)
+    else:
+        ad.name=request.form.get('name')
+        ad.content=request.form.get('content')
+        ad.influencer_id=request.form.get('influencer_id')
+        ad.niche_id=request.form.get('niche_id')
+        camp.budget=float(camp.budget)+float(ad.budget)
+        ad.budget=float(request.form.get('budget'))
+        camp.budget=float(camp.budget)-float(ad.budget)
 
-@app.route('/<username>/<int:camp_id>/<int:ad_id>') 
+        db.session.commit()
+
+        return redirect(url_for('camp_details',username=username,id=camp_id))
+    
+@app.route('/del_ad/<username>/<int:camp_id>/<int:ad_id>')                            # delete a campaign
+def del_ad(ad_id,username,camp_id): 
+    ad=Adrequest.query.filter_by(ad_id=ad_id).first()
+    camp=Campaign.query.filter_by(campaign_id=camp_id).first()
+    camp.budget=float(camp.budget)+float(ad.budget)
+
+    db.session.delete(ad)
+    db.session.commit()
+    return redirect(url_for('camp_details',username=username,id=camp_id))
+
+
+@app.route('/<username>/<int:camp_id>/ad_details/<int:ad_id>')                       #ad details                 
 def ad_details(camp_id,ad_id,username):
     ad=Adrequest.query.filter_by(ad_id=ad_id).first()
     inf=Influencer.query.filter_by(influencer_id=ad.influencer_id).first()
-    
-    if ad.status=='Accepted':
+    #ad.status='accepted'
+    if ad.status=='accepted':
         temp_stat='Pay Now'
-        return render_template('ad_details.html',ad=ad,inf=inf,status=temp_stat)
+        return render_template('ad_details.html',ad=ad,inf=inf,status=temp_stat,camp_id=camp_id,username=username)
 
-    return render_template('ad_details.html',ad=ad,inf=inf)
+    return render_template('ad_details.html',ad=ad,inf=inf,username=username,camp_id=camp_id)
 
 
 
