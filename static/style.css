@@ -67,3 +67,19 @@
 height: 105%!important;
 width: 102% !important;
 }
+
+#inf_dash{
+    width: 400px;
+    min-height: 320px;
+    background-color: #f8f9fa;
+    padding: 20px;
+
+}
+.main-panel {
+    flex: 1;
+    padding: 20px;
+}
+.profile-pic {
+    width: 100%;
+    height: auto;
+}

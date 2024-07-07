@@ -51,17 +51,17 @@
 <!-- CAMPAIGN DETAILS -->
 <h1 id="heading" style="color: darkgreen;">Campaign : {{camp.campaign_id}}</h1>
 <div id="container">
-    <p>Campagin Name: {{camp.name}}</p>
+    <p>Campagin Name: <b>{{camp.name}}</b></p>
     <p>Sponsor: {{camp.sponsors.company_name}}</p>
     <p>Category: {{camp.categories.name}}</p>
     <p>Start Date: {{camp.start_date}}</p>
     <p>End Date: {{camp.end_date}}</p>
-    <p>Budget: {{camp.budget}}</p>
+    <p>Remaining Budget: <b>{{camp.budget}}</b></p>
     <p>Goals: {{camp.goals}}</p>
-    <p>Status: {{camp.status}}</p>
+    <p>Status: <b>{{camp.status}}</b></p>
 </div>
 <!-- LIST OF ACTIVE ADDS -->
- {%if camp.status!='completed'%}
+ {%if camp.status=='pending'%}
 <h2 style="color: blue; padding: 2rem;">Active Ads : </h2>   
 <div id="campaign">
 <div class="row row-cols-1 row-cols-md-3 g-4">
@@ -76,10 +76,10 @@
       </div>
     </div>
     {% for ad in camp.ads %}
-    {%if ad.status!='completed'%}
+    {%if ad.status=='pending' or ad.status=='accepted' %}
     <div class="col">
       <div class="card h-100" id="cards">
-        <img src="/static/campaign.png" class="card-img-top" alt="...">
+        <img src="/static/ads.png" class="card-img-top" alt="...">
         <div class="card-body">
           <h5 class="card-title" style="text-align: center;">{{ad.name}}</h5>
           <p class="card-text" style="text-align: center;">|| {{ad.niche.name}} || {{ad.budget}} || {{ad.status}} ||</p>
@@ -110,7 +110,7 @@
     {%if ad.status=='completed'%}
     <div class="col">
       <div class="card h-100" id="cards">
-        <img src="/static/campaign.png" class="card-img-top" alt="...">
+        <img src="/static/ads.png" class="card-img-top" alt="...">
         <div class="card-body">
           <h5 class="card-title" style="text-align: center;">{{ad.name}}</h5>
           <p class="card-text" style="text-align: center;">|| {{ad.niche.name}} || {{ad.budget}} || {{ad.status}} ||</p>
@@ -118,6 +118,35 @@
         <form action="{{url_for('ad_details',camp_id=camp.campaign_id,ad_id=ad.ad_id,username=user.username)}}" method="GET" style="display: inline; margin-left: 5rem;">
             <button class="btn btn-info" type="submit" >View</button> 
         </form>
+      </div>
+    </div>
+    {%endif%}
+    {%endfor%}
+  </div>
+</div>
+
+<!-- Rejected by influencer -->
+<h2 style="color: blue; padding: 2rem;">Pending Ads : </h2>   
+<div id="campaign">
+<div class="row row-cols-1 row-cols-md-3 g-4">
+    {% for ad in camp.ads %}
+    {%if ad.status=='rejected'%}
+    <div class="col">
+      <div class="card h-100" id="cards">
+        <img src="/static/ads.png" class="card-img-top" alt="...">
+        <div class="card-body">
+          <h5 class="card-title" style="text-align: center;">{{ad.name}}</h5>
+          <p class="card-text" style="text-align: center;">|| {{ad.niche.name}} || {{ad.budget}} || {{ad.status}} ||</p>
+        </div>
+        <form action="{{url_for('ad_details',camp_id=camp.campaign_id,ad_id=ad.ad_id,username=user.username)}}" method="GET" style="display: inline; margin-left: 0.5rem;">
+          <button class="btn btn-info" type="submit" >View</button> 
+      </form>
+        <form action="{{url_for('update_ad',camp_id=camp.campaign_id,username=user.username,ad_id=ad.ad_id)}}" method="GET" style="display: inline; margin-left: 0.35rem; margin-right: 0.25rem;">
+          <button class="btn btn-warning" type="submit" >Update</button> 
+        </form>
+        <form action="{{url_for('del_ad',username=user.username,ad_id=ad.ad_id,camp_id=camp.campaign_id)}}" method="GET" style="display: inline; margin: 1px;" >
+          <button  class="btn btn-danger" type="Submit">Delete</button>    
+      </form>
       </div>
     </div>
     {%endif%}

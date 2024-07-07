@@ -50,7 +50,15 @@
                       </select>
                     </div>
                   </div>
-
+                  {% with messages = get_flashed_messages(with_categories=true) %}
+                  {% if messages %}
+                    <p class=flashes >
+                    {% for category, message in messages %}
+                      <h5 class="{{ category }}" style="color: red; text-align: center;">{{ message }}</h5>
+                    {% endfor %}
+                    </p>
+                  {% endif %}
+                {% endwith %} 
                 <input type="hidden" name="campaign_id" value="{{camp.campaign_id }}">
                 <div id="heading">
                 <button type="submit" class="btn btn-success" value="Submit" style="display: inline;">Add</button>

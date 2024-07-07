@@ -67,6 +67,15 @@
                     <textarea class="form-control" id="exampleFormControlTextarea1" rows="3" name="goals"></textarea>
                 </div>
                 <input type="hidden" name="sponsor_id" value="{{user.sponsor_id }}">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                  <p class=flashes >
+                  {% for category, message in messages %}
+                    <h5 class="{{ category }}" style="color: red; text-align: center;">{{ message }}</h5>
+                  {% endfor %}
+                  </p>
+                {% endif %}
+              {% endwith %} 
                 <div id="heading">
                 <button type="submit" class="btn btn-success" value="Submit" style="display: inline;">Add</button>
               </form>

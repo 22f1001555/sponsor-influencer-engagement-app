@@ -73,7 +73,7 @@
         <img src="/static/campaign.png" class="card-img-top" alt="...">
         <div class="card-body">
           <h5 class="card-title" style="text-align: center;">{{campaign.name}}</h5>
-          <p class="card-text" style="text-align: center;">| {{campaign.categories.name}} | {{campaign.visibility}} |</p>
+          <p class="card-text" style="text-align: center;">| {{campaign.categories.name}} | {{campaign.visibility}} | {{campaign.budget}} </p>
           <h6 style="text-align: center;"> Campaign duration: {{(campaign.end_date - campaign.start_date).days}} days </h6>
         </div>
         <form action="{{url_for('camp_details',username=user.username,id=campaign.campaign_id)}}" method="GET" style="display: inline; margin-left: 0.5rem;">
@@ -110,19 +110,36 @@
           <form action="{{url_for('camp_details',username=user.username,id=campaign.campaign_id)}}" method="GET" style="display: inline; margin-left: 5rem;">
               <button class="btn btn-info" type="submit" >View</button> 
           </form>
-          <!-- <form action="{{url_for('update_camp',id=campaign.campaign_id,username=user.username)}}" method="GET" style="display: inline; margin-left: 0.35rem; margin-right: 0.25rem;">
-              <button class="btn btn-warning" type="submit" >Update</button> 
-          </form>
-          <form action="{{url_for('del_camp',username=user.username,id=campaign.campaign_id)}}" method="GET" style="display: inline; margin: 1px;" >
-              <button  class="btn btn-danger" type="Submit">Delete</button>    
-          </form> -->
-          
         </div>
       </div>
       {%endif%}
       {%endfor%}
     </div>
   </div>
+<!-- Flagged CAMPAIGNS -->
+<h3 style="padding-left: 2rem;">Flagged Campaigns: </h3>
+<div id="campaign">
+  <div class="row row-cols-1 row-cols-md-3 g-4">
+      {% for campaign in user.campaigns %}
+      {%if campaign.status=='completed' %}
+      <div class="col">
+        <div class="card h-100" id="cards">
+          <img src="/static/campaign.png" class="card-img-top" alt="...">
+          <div class="card-body">
+            <h5 class="card-title" style="text-align: center;">{{campaign.name}}</h5>
+            <p class="card-text" style="text-align: center;">| {{campaign.categories.name}} | {{campaign.visibility}} |</p>
+            <h6 style="text-align: center;"> Campaign duration: {{(campaign.end_date - campaign.start_date).days}} days </h6>
+          </div>
+          <form action="{{url_for('camp_details',username=user.username,id=campaign.campaign_id)}}" method="GET" style="display: inline; margin-left: 5rem;">
+              <button class="btn btn-info" type="submit" >View</button> 
+          </form>
+        </div>
+      </div>
+      {%endif%}
+      {%endfor%}
+    </div>
+  </div>
+
 
 
 

@@ -6,6 +6,7 @@ class User(db.Model):
     username=db.Column(db.String(),nullable=False,unique=True)
     password=db.Column(db.String(),nullable=False)
     role=db.Column(db.String(),nullable=False)
+    
 
 class Admin(db.Model):
 
@@ -27,6 +28,7 @@ class Sponsor(db.Model):
     company_name=db.Column(db.String(),nullable=False,unique=True)
     industry=db.Column(db.String(),nullable=False)
     budget=db.Column(db.Numeric(10, 2),nullable=False)
+    flagged=db.Column(db.String(),nullable=False,default=0)
     admin_id=db.Column(db.Integer,db.ForeignKey('admin.admin_id'),nullable=False,default=1)
     campaigns=db.relationship('Campaign',back_populates='sponsors')
     admin=db.relationship('Admin',back_populates='sponsors')
@@ -38,6 +40,8 @@ class Influencer(db.Model):
     password=db.Column(db.String(),nullable=False)
     f_name=db.Column(db.String(),nullable=False)
     l_name=db.Column(db.String(),nullable=False)
+    earnings=db.Column(db.Numeric(10, 2),nullable=False,default=0)
+    flagged=db.Column(db.String(),nullable=False,default=0)
     admin_id=db.Column(db.Integer,db.ForeignKey('admin.admin_id'),nullable=False,default=1)
     category_id=db.Column(db.String(),db.ForeignKey("category.cat_id"),nullable=False)
     niche_id=db.Column(db.String(),db.ForeignKey("niche.niche_id"),nullable=False)
@@ -46,6 +50,8 @@ class Influencer(db.Model):
     category=db.relationship('Category', back_populates='influencers')
     niche = db.relationship('Niche', back_populates='influencers')
     admin=db.relationship('Admin', back_populates='influencers')
+    #campaigns=db.relationship('Campaign',back_populates='influencers')
+
     
 
 class Campaign(db.Model):
@@ -61,8 +67,10 @@ class Campaign(db.Model):
     status = db.Column(db.String(), nullable=False,default='pending')
     visibility= db.Column(db.String(50),nullable=False)
     goals=db.Column(db.String(),nullable=False)
+    flagged=db.Column(db.String(),nullable=False,default=0)
     categories=db.relationship('Category',back_populates='campaigns')
     sponsors=db.relationship('Sponsor',back_populates='campaigns')
+    #influencers=db.relationship('Influencer',back_populates='campaigns')
     admin=db.relationship('Admin',back_populates='campaigns')
     ads=db.relationship('Adrequest',back_populates='campaign')
     

@@ -9,7 +9,7 @@
 </head>
 <body>
     <h1 id="heading">Payment Gateway</h1>
-    <form action="{{url_for('payment',ad_id=ad.ad_id,camp_id=ad.campaign.campaign_id,username=username)}}" method="POST">
+    <form action="{{url_for('payment',ad_id=ad.ad_id,camp_id=ad.campaign.campaign_id,username=username,status=status)}}" method="POST">
     <div id="input-form">
     
         <p>Ad title: {{ad.name}}</p>
@@ -19,10 +19,19 @@
         <p>Budget: {{ad.budget}}</p>
         <p>Influencer: {{inf.f_name}} {{inf.l_name}}</p>
         <br>
+        {%if status=='Pay Now'%}
         <h5 style="color: darkblue; text-align: center;">{{ad.budget}}</h5>
         <div id="heading">
         <button type="submit" class="btn btn-success" >Pay</button>
         </div>
+        {%else%}
+        <!-- <h5 style="color: darkblue; text-align: center;">Enter{{ad.budget}}</h5> -->
+         <label>Enter amount: </label>
+         <input type="number" name="negotiate" value="{{ad.budget}}" min="{{ad.budget}}">
+        <div id="heading">
+        <button type="submit" class="btn btn-warning" >Negotiate</button>
+        </div>
+        {%endif%}
     </div>
 </form>
     

@@ -38,13 +38,21 @@ def new_campaign(username):
         
         new_campaign=Campaign(name=title,sponsor_id=sponsor_id,category_id=category_id,start_date=start_date.date(),
                               end_date=end_date.date(),budget=budget,visibility=visibility,goals=goals)
-        db.session.add(new_campaign)
+        
+        
 #deduct the budget for the campaign,from sponsor
         if user.budget<budget:
             return 'Insufficient budget',400
         user.budget=float(user.budget)-budget
-        db.session.commit()
-        return redirect(url_for('campaigns',username=username))
+        try:
+            db.session.add(new_campaign)
+            db.session.commit()
+            return redirect(url_for('campaigns',username=username))
+        except IntegrityError:
+            db.session.rollback()
+            flash('Campaign already exists', 'error')
+            return render_template('new_campaign.html',user=user,cat=cat)
+
 
 @app.route('/update/<username>/<int:id>',methods=['GET','POST'])                    # update a campaign
 def update_camp(id,username):
@@ -52,9 +60,6 @@ def update_camp(id,username):
     cat=Category.query.all()
     update_camp=Campaign.query.filter_by(campaign_id=id).first()
     ads=update_camp.ads
-    
-    if request.method=='GET':
-        return render_template('update_campaign.html',user=sponsor,camp=update_camp,cat=cat)
     
     if request.method=='POST':
         
@@ -68,7 +73,7 @@ def update_camp(id,username):
         update_camp.end_date=datetime.strptime(update_camp.end, '%Y-%m-%d')
         update_camp.status=request.form.get('status')
 # update a campaign completed,only when all its adds are completed and 
-# there is atleat one completed add in the campaign
+# there is atleast one completed add in the campaign
         if update_camp.status=='completed':
             if not(ads):
                 return "Please create an Ad before marking the campaign closed",404
@@ -90,6 +95,8 @@ def update_camp(id,username):
         
         db.session.commit()
         return redirect(url_for('campaigns',username=username))
+    
+    return render_template('update_campaign.html',user=sponsor,camp=update_camp,cat=cat)
 
 @app.route('/del_camp/<username>/<int:id>')                            # delete a campaign
 def del_camp(id,username): 

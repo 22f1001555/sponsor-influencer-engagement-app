@@ -6,6 +6,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 </head>
 <body>
+  
     <div id="image">
         <a href="/"><img src="/static/logo.png" class="card-img-top"></a>
     </div>
@@ -13,23 +14,24 @@
     <br>
     
     <div id="container" style="margin: 5px 300px 5px 300px; border: 2px solid grey; padding: 2em 2em 0em 2em;border-radius: 20px;" >
-        <h2 id="heading">Influencer Registration</h2>
+     
+      <h2 id="heading">Influencer Registration</h2>
                <form action="/influencer/register" method="POST">
                 <div class="row g-3">
                     <div class="col-sm-7">
-                      <input type="text" class="form-control" placeholder="First Name" aria-label="f_name" name="f_name">
+                      <input type="text" class="form-control" placeholder="First Name" aria-label="f_name" name="f_name" required>
                     </div>
                     <div class="col-sm">
-                      <input type="text" class="form-control" placeholder="Last name" aria-label="l_name" name="l_name">
+                      <input type="text" class="form-control" placeholder="Last name" aria-label="l_name" name="l_name" required>
                     </div>
                 </div>
                 <br>
                 <div class="row g-3">
                     <div class="col-sm-7">
-                      <input type="text" class="form-control" placeholder="User Name" aria-label="user_name" name="username">
+                      <input type="text" class="form-control" placeholder="User Name" aria-label="user_name" name="username" required>
                     </div>
                     <div class="col-sm">
-                      <input type="password" class="form-control" placeholder="Password" aria-label="pwd" name="pwd">
+                      <input type="password" class="form-control" placeholder="Password" aria-label="pwd" name="pwd" required>
                     </div>
                 </div>
                 <br>
@@ -58,29 +60,38 @@
                 <div>
                     <label for="social_media" >Social Media Presence : </label>
                     <div class="form-check form-check-inline" >
-                        <input class="form-check-input" type="checkbox" id="instagram" value="instagram" name="social">
+                        <input class="form-check-input" type="checkbox" id="instagram" value="instagram" name="social" required>
                         <label class="form-check-label" for="instagram">Instagram</label>
                       </div>
                       <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox" id="Youtube" value="Youtube" name="social">
+                        <input class="form-check-input" type="checkbox" id="Youtube" value="Youtube" name="social" required>
                         <label class="form-check-label" for="Youtube">Youtube</label>
                       </div>
                       <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox" id="Twitter" value="Twitter" name="social" >
+                        <input class="form-check-input" type="checkbox" id="Twitter" value="Twitter" name="social" required>
                         <label class="form-check-label" for="Twitter">Twitter</label>
                       </div>
                       <br><br>
                       <div>
                         <label for="reach">Number of Subscribers: </label>
-                        <input type="number" name="reach" min="100" step="100" >
+                        <input type="number" name="reach" min="0"  required >
                       </div>
                 </div>
-    
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                  <p class=flashes >
+                  {% for category, message in messages %}
+                    <h5 class="{{ category }}" style="color: red; text-align: center;">{{ message }}</h5>
+                  {% endfor %}
+                  </p>
+                {% endif %}
+              {% endwith %} 
                 <div class="col-12" style="padding: 2em .2em;">
                     <button type="submit" class="btn btn-primary" value="Submit">Sign in</button>
                   </div>
                 </form> 
     </div>
+    
     
 </body>
 </html>

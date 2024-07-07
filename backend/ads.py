@@ -1,4 +1,5 @@
-from flask import Flask,render_template,redirect,request,url_for
+from flask import Flask,render_template,redirect,request,url_for,flash
+from sqlalchemy.exc import IntegrityError
 from flask import current_app as app
 from .models import *
 from .users import *
@@ -14,10 +15,10 @@ def new_ad(id,username):
     camp=Campaign.query.filter_by(campaign_id=id).first()
     niches=Niche.query.filter_by(cat_id=camp.category_id).all()
     infs=Influencer.query.filter_by(category_id=camp.category_id).all()
-    if request.method=='GET':
-        return render_template('new_ad.html',camp=camp,infs=infs,niches=niches,username=username)
+    
+        
 
-    else:
+    if request.method=='POST':
         name=request.form.get('name')
         content=request.form.get('content')
         campaign_id=request.form.get('campaign_id')
@@ -31,12 +32,17 @@ def new_ad(id,username):
 
             new_ad=Adrequest(name=name,content=content,campaign_id=campaign_id,
                             influencer_id=influencer_id,niche_id=niche_id,budget=budget)
-            
-            db.session.add(new_ad)
-            db.session.commit()
+            try:
+                db.session.add(new_ad)
+                db.session.commit()
+            except IntegrityError:
+                db.session.rollback()
+                flash('Ad already exists','error')
             return redirect(url_for('camp_details',id=id,username=username))
         else:
             return 'Insufficient budget,add more budget to the campaign',404
+
+    return render_template('new_ad.html',camp=camp,infs=infs,niches=niches,username=username)
         
 @app.route('/<username>/<int:camp_id>/<int:ad_id>/update',methods=['GET','POST'])       #update ad
 def update_ad(ad_id,camp_id,username):
@@ -44,23 +50,28 @@ def update_ad(ad_id,camp_id,username):
     camp=Campaign.query.filter_by(campaign_id=camp_id).first()
     niches=Niche.query.filter_by(cat_id=camp.category_id).all()
     infs=Influencer.query.filter_by(category_id=camp.category_id).all()
-    if request.method=='GET':
-        return render_template('update_ad.html',ad=ad,camp=camp,infs=infs,
-                               niches=niches,username=username)
-    else:
+
+    if ad.status=='accepted':
+        return 'can not edit ad after getting accepted by an influencer!'
+    
+    if request.method=='POST':
+        prev_budget=ad.budget
         ad.name=request.form.get('name')
         ad.content=request.form.get('content')
         ad.influencer_id=request.form.get('influencer_id')
         ad.niche_id=request.form.get('niche_id')
-        camp.budget=float(camp.budget)+float(ad.budget)
         ad.budget=float(request.form.get('budget'))
-        camp.budget=float(camp.budget)-float(ad.budget)
+        if float(prev_budget)!=ad.budget:
+            camp.budget=float(camp.budget)+float(prev_budget)
+            camp.budget=float(camp.budget)-float(ad.budget)
 
         db.session.commit()
-
         return redirect(url_for('camp_details',username=username,id=camp_id))
     
-@app.route('/del_ad/<username>/<int:camp_id>/<int:ad_id>')                            # delete a campaign
+    return render_template('update_ad.html',ad=ad,camp=camp,infs=infs,
+                               niches=niches,username=username)
+    
+@app.route('/del_ad/<username>/<int:camp_id>/<int:ad_id>')                            # delete a ad
 def del_ad(ad_id,username,camp_id): 
     ad=Adrequest.query.filter_by(ad_id=ad_id).first()
     camp=Campaign.query.filter_by(campaign_id=camp_id).first()
@@ -75,55 +86,33 @@ def del_ad(ad_id,username,camp_id):
 def ad_details(camp_id,ad_id,username):
     ad=Adrequest.query.filter_by(ad_id=ad_id).first()
     inf=Influencer.query.filter_by(influencer_id=ad.influencer_id).first()
-    #ad.status='accepted'
-    if ad.status=='accepted':
+    sponsor=Sponsor.query.filter_by(username=username).first()
+    if ad.status=='accepted' and sponsor!=None:
         temp_stat='Pay Now'
         return render_template('ad_details.html',ad=ad,inf=inf,status=temp_stat,camp_id=camp_id,username=username)
-
-    return render_template('ad_details.html',ad=ad,inf=inf,username=username,camp_id=camp_id)
-
-
-
-
-
-
-
-@app.route('/influencer/register', methods=['GET','POST'])                  # influencer registration
-def in_register():
-    if request.method=='GET':
-        cat=Category.query.all()
-        return render_template('influencer_reg.html',category=cat)
+    elif ad.status=='pending' and sponsor==None:
+        temp_stat='Negotiate'
+        return render_template('ad_details.html',ad=ad,inf=inf,camp_id=camp_id,username=username,status=temp_stat)
     else:
-        f_name=request.form.get('f_name')
-        l_name=request.form.get('l_name')
-        u_name=request.form.get('username')
-        pwd=request.form.get('pwd')
-        cat_id=request.form.get('category')
-        niche_id=request.form.get('niche')
-        social=request.form.get('social')
-        reach=request.form.get('reach')
+        return render_template('ad_details.html',ad=ad,inf=inf,camp_id=camp_id,username=username)
 
-        new_influencer=Influencer(username=u_name,password=pwd,f_name=f_name,l_name=l_name,
-                                  category_id=cat_id,niche_id=niche_id,social_media=social,subs=reach)
-        
-        db.session.add(new_influencer)
-        db.session.commit()
-        return redirect('/influencer/login')
-
-@app.route('/influencer/login',methods=['GET','POST'])                          # influencer login
-def in_login():
-    if request.method=='GET':
-        return render_template('influencer_login.html')
-    else:
-        username=request.form.get('username')
-        password=request.form.get('pwd')
-        user=Influencer.query.filter_by(username=username).first()
-        if not(user):
-            return 'user not found'
+@app.route('/<username>/ads/<int:ad_id>/status',methods=['POST'])                       #ad status change                 
+def ad_status(ad_id,username):
+    if request.method=='POST':
+        ad_status=request.form.get('status')
+        ad=Adrequest.query.filter_by(ad_id=ad_id).first()
+        if(ad_status=='rejected'):
+            ad.status='rejected'
+            ad.campaign.budget=float(ad.campaign.budget)+float(ad.budget)
         else:
-            if password==user.password:
-                return render_template('inf_dashboard.html')
-            else:
-                return 'incorrect password,try again'
+            ad.status='accepted'
+    db.session.commit()
+    return redirect(url_for('in_dash',username=username))
+
+
+
+
+
+
 
 
