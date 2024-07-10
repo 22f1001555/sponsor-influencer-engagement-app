@@ -83,6 +83,7 @@ class Adrequest(db.Model):
     niche_id=db.Column(db.String(),db.ForeignKey("niche.niche_id"),nullable=False)
     status=db.Column(db.String(), nullable=False,default='pending')
     budget = db.Column(db.Numeric(10, 2), nullable=False)
+    negotiate_budget=db.Column(db.Numeric(10, 2), nullable=False,default=0)
     niche=db.relationship('Niche',back_populates='adrequests')
     campaign=db.relationship('Campaign',back_populates='ads')
 

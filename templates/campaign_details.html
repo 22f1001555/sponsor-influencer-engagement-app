@@ -103,11 +103,12 @@
 {%endif%}
 
 <!-- COMPLETED ADS -->
+
 <h2 style="color: blue; padding: 2rem;">Completed Ads : </h2>   
 <div id="campaign">
 <div class="row row-cols-1 row-cols-md-3 g-4">
-    {% for ad in camp.ads %}
-    {%if ad.status=='completed'%}
+  {% for ad in camp.ads %}
+  {%if ad.status=='completed'%}    
     <div class="col">
       <div class="card h-100" id="cards">
         <img src="/static/ads.png" class="card-img-top" alt="...">
@@ -126,11 +127,12 @@
 </div>
 
 <!-- Rejected by influencer -->
-<h2 style="color: blue; padding: 2rem;">Pending Ads : </h2>   
+
+<h2 style="color: blue; padding: 2rem;">Rejected Ads : </h2>   
 <div id="campaign">
 <div class="row row-cols-1 row-cols-md-3 g-4">
-    {% for ad in camp.ads %}
-    {%if ad.status=='rejected'%}
+  {% for ad in camp.ads %}
+{%if ad.status=='rejected'%}  
     <div class="col">
       <div class="card h-100" id="cards">
         <img src="/static/ads.png" class="card-img-top" alt="...">
@@ -147,6 +149,30 @@
         <form action="{{url_for('del_ad',username=user.username,ad_id=ad.ad_id,camp_id=camp.campaign_id)}}" method="GET" style="display: inline; margin: 1px;" >
           <button  class="btn btn-danger" type="Submit">Delete</button>    
       </form>
+      </div>
+    </div>
+    {%endif%}
+    {%endfor%}
+  </div>
+</div>
+
+<!-- Requested by influencer -->
+
+<h2 style="color: blue; padding: 2rem;">Requested Ads : </h2>   
+<div id="campaign">
+<div class="row row-cols-1 row-cols-md-3 g-4">
+  {% for ad in camp.ads %}
+  {%if ad.status=='requested'%}
+    <div class="col">
+      <div class="card h-100" id="cards">
+        <img src="/static/ads.png" class="card-img-top" alt="...">
+        <div class="card-body">
+          <h5 class="card-title" style="text-align: center;">{{ad.name}}</h5>
+          <p class="card-text" style="text-align: center;">|| {{ad.niche.name}} || {{ad.budget}} || {{ad.status}} ||</p>
+        </div>
+        <form action="{{url_for('ad_details',camp_id=camp.campaign_id,ad_id=ad.ad_id,username=user.username)}}" method="GET" style="display: inline; margin-left: 5rem;">
+            <button class="btn btn-info" type="submit" >View</button> 
+        </form>
       </div>
     </div>
     {%endif%}

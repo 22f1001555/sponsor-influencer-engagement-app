@@ -17,13 +17,30 @@ def payment(username,camp_id,ad_id,status):
         
     else:
         if status=='Pay Now':
-            ad.status='completed'
-            inf.earnings=float(inf.earnings)+float(ad.budget)
-            db.session.commit()
+            
+            if ad.negotiate_budget>0:
+                camp.budget=float(camp.budget)+float(ad.budget)
+                if ad.negotiate_budget<=camp.budget:
+                    camp.budget=float(camp.budget)-float(ad.negotiate_budget)
+                    inf.earnings=float(inf.earnings)+float(ad.negotiate_budget)
+                    ad.status='completed'
+                    db.session.commit()
+                else:
+                    db.session.rollback()
+                    return 'requested amount is more than campaign budget'
+
+            else:
+                inf.earnings=float(inf.earnings)+float(ad.budget)
+                ad.status='completed'
+                db.session.commit()
             return redirect(url_for('camp_details',username=username,id=camp_id))
         else:
-            ad.status='pending'
-            negotaited_budget=float(request.form.get('negotiate'))
+            ad.status='requested'
+            ad.negotiate_budget=(request.form.get('negotiate'))
+            
+            db.session.commit()
+            return redirect(url_for('in_dash',username=username))
+            
             ##fill this correctly##
 
     

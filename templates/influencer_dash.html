@@ -52,7 +52,7 @@
     <div class="col-md-9 main-panel">
         <h1 style="padding: 2rem;">Welcome, {{ inf.f_name }}</h1>
         <h5>Active Campaigns :</h5>
-        <div id="container">
+        <div style="padding: 2rem 0rem 2rem 0rem;">
             {% for ad in ads %}
             
            
@@ -72,16 +72,15 @@
 {%endfor%}
         </div>
     
+        
         <h5>Completed Campaigns :</h5>
-        <div id="container">
+        <div style="padding: 2rem 0rem 2rem 0rem;">
             {% for ad in ads %}
-            
-           
-    {% if ad.status=='completed' %}
+            {% if ad.status=='completed' %}        
     <ul class="list-group">
         <span style="display: inline-flex;">
             <li class="list-group-item" style="display: flex;width: 100%;">
-                    <b>Campaign id: </b>{{ad.campaign.campaign_id}}|<b>Ad: </b> {{ad.name}}| Progress:
+                    Campaign id: {{ad.campaign.campaign_id}}  |  Ad: {{ad.name}} | Progress:
             </li>
             <form action="{{url_for('ad_details',camp_id=ad.campaign.campaign_id,ad_id=ad.ad_id,username=inf.username)}}" method="GET">
                 <button type="submit" class="btn btn-warning">View</button>
@@ -92,12 +91,11 @@
 
 {%endfor%}
         </div> 
+        
         <h5>Pending Campaigns :</h5>
-        <div id="container">
+        <div style="padding: 2rem 0rem 2rem 0rem;">
             {% for ad in ads %}
-            
-           
-    {% if ad.status=='pending' %}
+            {% if ad.status=='pending' %}        
     <ul class="list-group">
         <span style="display: inline-flex;">
             <li class="list-group-item" style="display: flex;width: 100%;">

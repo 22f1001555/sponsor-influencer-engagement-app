@@ -61,9 +61,12 @@ def update_ad(ad_id,camp_id,username):
         ad.influencer_id=request.form.get('influencer_id')
         ad.niche_id=request.form.get('niche_id')
         ad.budget=float(request.form.get('budget'))
+        ad.status='pending'
         if float(prev_budget)!=ad.budget:
             camp.budget=float(camp.budget)+float(prev_budget)
             camp.budget=float(camp.budget)-float(ad.budget)
+            if camp.budget<0:
+                return 'Insufficient budget'
 
         db.session.commit()
         return redirect(url_for('camp_details',username=username,id=camp_id))
@@ -87,12 +90,15 @@ def ad_details(camp_id,ad_id,username):
     ad=Adrequest.query.filter_by(ad_id=ad_id).first()
     inf=Influencer.query.filter_by(influencer_id=ad.influencer_id).first()
     sponsor=Sponsor.query.filter_by(username=username).first()
-    if ad.status=='accepted' and sponsor!=None:
+    if (ad.status=='accepted' or ad.status=='requested') and sponsor!=None:
         temp_stat='Pay Now'
         return render_template('ad_details.html',ad=ad,inf=inf,status=temp_stat,camp_id=camp_id,username=username)
     elif ad.status=='pending' and sponsor==None:
         temp_stat='Negotiate'
         return render_template('ad_details.html',ad=ad,inf=inf,camp_id=camp_id,username=username,status=temp_stat)
+    # elif ad.status=='requested':
+    #     temp_stat='Pay Now'
+    #     return render_template('ad_details.html',ad=ad,inf=inf,camp_id=camp_id,username=username)
     else:
         return render_template('ad_details.html',ad=ad,inf=inf,camp_id=camp_id,username=username)
 
@@ -103,7 +109,7 @@ def ad_status(ad_id,username):
         ad=Adrequest.query.filter_by(ad_id=ad_id).first()
         if(ad_status=='rejected'):
             ad.status='rejected'
-            ad.campaign.budget=float(ad.campaign.budget)+float(ad.budget)
+            #ad.campaign.budget=float(ad.campaign.budget)+float(ad.budget)
         else:
             ad.status='accepted'
     db.session.commit()

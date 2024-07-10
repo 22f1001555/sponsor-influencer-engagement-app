@@ -13,23 +13,32 @@
     
     <p>Ad title: {{ad.name}}</p>
     <p>Campagin Name: {{ad.campaign.name}}</p>
-    <p>Requirements: {{ad.content}}</p>
+    <p>Campagin Sponsor: <b>{{ad.campaign.sponsors.company_name}}</b></p>
+    <p>Requirements: <b>{{ad.content}}</b></p>
     <p>Category: {{ad.campaign.categories.name}}</p>
     <p>Niche: {{ad.niche.name}}</p>
     <p>Budget: <b>{{ad.budget}}</b></p>
+    {%if ad.negotiate_budget>0%}
+    <p style="color: red;" >Requested Payment: <b >{{ad.negotiate_budget}}</b></p>
+    {%endif%}
     <p>Requested Influencer: <b>{{inf.f_name}} {{inf.l_name}}</b></p>
     <p>Status: <b>{{ad.status}}</b></p>
+    
 
 <!-- <form action="{{url_for('camp_details',id=ad.campaign.campaign_id,username=username)}}" method="GET">
 <button type="submit" class="btn btn-primary">Back</button>
 </form> -->
 {%if status=='Pay Now'%}
-<a href="{{url_for('payment',username=username,camp_id=camp_id,ad_id=ad.ad_id,status=status)}}" style="display: inline-block; padding-left: 7rem;"><h5>{{status}}</h5></a>
-<!-- <a href="{{url_for('ad_details',username=ad.campaign.sponsors.username,camp_id=camp_id,ad_id=ad.ad_id)}}" style="display: inline-block; padding-left: 7rem;"><h5>Back</h5></a> -->
-{%else%}
-<a href="{{url_for('payment',username=username,camp_id=camp_id,ad_id=ad.ad_id,status=status)}}" style="display: inline-block; padding-left: 4rem;" ><h5>{{status}}</h5></a>
+<!-- <a href="{{url_for('payment',username=username,camp_id=camp_id,ad_id=ad.ad_id,status=status)}}" style="display: inline-block; padding-left: 6rem;"><h5>{{status}}</h5></a> -->
+<form action="{{url_for('payment',username=username,camp_id=camp_id,ad_id=ad.ad_id,status=status)}}" method="GET" style="display: inline-block; padding: 2px 0rem 0rem 5rem;">
+    <button class="btn btn-warning">{{status}}</button>
+</form>
+{%elif status=='accepted'%}
+<!-- <a href="{{url_for('payment',username=username,camp_id=camp_id,ad_id=ad.ad_id,status=status)}}" style="display: inline-block; padding-left: 4rem;" ><h5>{{status}}</h5></a> -->
 <!-- <a href="{{url_for('in_dash',username=username)}}" style="display: inline-block; padding-left: 4rem;"><h5>Back</h5></a> -->
-
+<form action="{{url_for('payment',username=username,camp_id=camp_id,ad_id=ad.ad_id,status=status)}}" method="GET" style="display: inline-block; padding: 2px 0rem 0rem 5rem;">
+    <button class="btn btn-warning">{{status}}</button>
+</form>
 {%endif%}
 </div>
 </body>

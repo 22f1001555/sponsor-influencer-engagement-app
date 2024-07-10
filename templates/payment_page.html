@@ -8,10 +8,10 @@
     <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-    <h1 id="heading">Payment Gateway</h1>
+    <h1 id="heading" style="color: blue;">Payment Gateway</h1>
     <form action="{{url_for('payment',ad_id=ad.ad_id,camp_id=ad.campaign.campaign_id,username=username,status=status)}}" method="POST">
     <div id="input-form">
-    
+        
         <p>Ad title: {{ad.name}}</p>
         <p>Campagin Name: {{ad.campaign.name}}</p>
         <p>Requirements: {{ad.content}}</p>
@@ -20,10 +20,18 @@
         <p>Influencer: {{inf.f_name}} {{inf.l_name}}</p>
         <br>
         {%if status=='Pay Now'%}
-        <h5 style="color: darkblue; text-align: center;">{{ad.budget}}</h5>
+        {%if ad.negotiate_budget==0%}
+        <!-- <h5 style="color: darkblue; text-align: center;">{{ad.budget}}</h5> -->
         <div id="heading">
-        <button type="submit" class="btn btn-success" >Pay</button>
+        <button type="submit" class="btn btn-success" >Confirm & Pay {{ad.budget}}</button>
         </div>
+        {%else%}
+        <!-- <h5 style="color: darkblue; text-align: center;">{{ad.negotiate_budget}}</h5> -->
+        <p style="color: red;text-align: center;">Requested Payment: {{ad.negotiate_budget}}</p>
+        <div id="heading">
+        <button type="submit" class="btn btn-success" >Confirm & Pay {{ad.negotiate_budget}}</button>
+        </div>
+        {%endif%}
         {%else%}
         <!-- <h5 style="color: darkblue; text-align: center;">Enter{{ad.budget}}</h5> -->
          <label>Enter amount: </label>

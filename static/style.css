@@ -19,7 +19,7 @@
 
 #input-form{
     border: 2px solid rgb(115, 115, 118);
-    width: 400px;
+    width: fit-content;
     height: auto;
     margin: auto;
     margin-top: 10px;
@@ -48,7 +48,7 @@
 
 
 #campaign{
-    border: 2px solid rgb(101, 99, 99);
+    border: 1px solid rgb(101, 99, 99);
     border-radius: 15px;
     margin: 2rem;
     padding: 3rem 5rem 3rem 5rem;
