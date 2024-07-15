@@ -9,46 +9,35 @@
 <body>
     <!-- navbar -->
     <nav class="navbar navbar-expand-lg bg-body-tertiary">
-        <div class="container-fluid">
-          <a class="navbar-brand" href="/">Adviser</a>
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-          </button>
-          <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-              <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="{{url_for('sp_dash',username=user.username)}}">Home</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="/{{user.username}}/campaigns">Campaigns</a>
-              </li>
-              <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  Dropdown
-                </a>
-                <ul class="dropdown-menu">
-                  <li><a class="dropdown-item" href="#">Action</a></li>
-                  <li><a class="dropdown-item" href="#">Another action</a></li>
-                  <li><hr class="dropdown-divider"></li>
-                  <li><a class="dropdown-item" href="#">Something else here</a></li>
-                </ul>
-              </li>
-
-            </ul>
-            <form class="d-flex" role="search">
-              <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-              <button class="btn btn-outline-success" type="submit" >Search</button>
-            </form>
-          </div>
-          <ul class="navbar-nav me-auto mb-1 mb-lg-0">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="/">Adviser</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
             <li class="nav-item">
-              <a class="nav-link" href="/sponsor/login" >Logout</a>
+              <a class="nav-link active" aria-current="page" href="/sponsor/{{user.username}}/dashboard">Home</a>
             </li>
-          </ul>
-        </div>
-    </nav>
+            <li class="nav-item">
+              <a class="nav-link" href="/{{user.username}}/campaigns">Campaigns</a>
+            </li>
+        
 
-<!-- end of navbar -->
+          </ul>
+          <form class="d-flex" role="search" method="get" action="{{url_for('search_inf',username=user.username)}}">
+            <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" name="query">
+            <button class="btn btn-outline-success" type="submit" >Search</button>
+          </form>
+        </div>
+        <ul class="navbar-nav me-auto mb-1 mb-lg-0">
+          <li class="nav-item">
+            <a class="nav-link" href="/sponsor/login" >Logout</a>
+          </li>
+        </ul>
+      </div>
+  </nav>
+  <!-- END OF NAVBAR -->
  
 <h1 style="text-align: center; color: blue; padding: 2rem;">Campaigns for {{user.company_name}} </h1>
 <h3 style="text-align: center;padding-bottom: 1rem;">Remaing Budget: {{user.budget}}</h3>
@@ -67,7 +56,7 @@
       </div>
     </div>
     {% for campaign in user.campaigns %}
-    {%if campaign.status=='pending'%}
+    {%if campaign.status=='pending' and campaign.flagged!=1 %}
     <div class="col">
       <div class="card h-100" id="cards">
         <img src="/static/campaign.png" class="card-img-top" alt="...">
@@ -99,7 +88,7 @@
 <div id="campaign">
   <div class="row row-cols-1 row-cols-md-3 g-4">
     {% for campaign in user.campaigns %}
-    {%if campaign.status=='completed'%}    
+    {%if campaign.status=='completed' and campaign.flagged!=1%}    
       <div class="col">
         <div class="card h-100" id="cards">
           <img src="/static/campaign.png" class="card-img-top" alt="...">
@@ -123,7 +112,7 @@
 <div id="campaign">
   <div class="row row-cols-1 row-cols-md-3 g-4">
     {% for campaign in user.campaigns %}
-    {%if campaign.status=='completed' %}     
+    {%if campaign.flagged==1 %}     
       <div class="col">
         <div class="card h-100" id="cards">
           <img src="/static/campaign.png" class="card-img-top" alt="...">

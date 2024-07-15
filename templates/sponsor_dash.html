@@ -20,21 +20,11 @@
               <li class="nav-item">
                 <a class="nav-link" href="/{{user.username}}/campaigns">Campaigns</a>
               </li>
-              <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  Dropdown
-                </a>
-                <ul class="dropdown-menu">
-                  <li><a class="dropdown-item" href="#">Action</a></li>
-                  <li><a class="dropdown-item" href="#">Another action</a></li>
-                  <li><hr class="dropdown-divider"></li>
-                  <li><a class="dropdown-item" href="#">Something else here</a></li>
-                </ul>
-              </li>
+          
 
             </ul>
-            <form class="d-flex" role="search">
-              <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+            <form class="d-flex" role="search" method="get" action="{{url_for('search_inf',username=user.username)}}">
+              <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" name="query">
               <button class="btn btn-outline-success" type="submit" >Search</button>
             </form>
           </div>
@@ -45,6 +35,7 @@
           </ul>
         </div>
     </nav>
+    <!-- END OF NAVBAR -->
     <div style="margin: 2rem 0rem 5rem 1rem;">
       <h1>Welcome, <span style="color: blue;">{{user.company_name}}</span></h1>
       <h5 style="padding-top: 1rem;">Available Budget: {{user.budget}}</h5>
@@ -83,7 +74,8 @@
             {%endif%}
             {% endfor %}
           </div>
-      
+
+          <!-- completed campaigns -->
             <div>
           <h5 style="margin: 0rem 0rem 2rem 1rem;">Completed Campaigns :</h5>
             <div id="container" style="border: 1px ;">
@@ -119,11 +111,35 @@
           {% endfor %}
         </div>
       </div>
+
+      <!-- new ad requests -->
       <div>
         <h5 style="margin: 0rem 0rem 2rem 1rem;">New Requests:</h5>
           <div id="container" style="border: 1px ;">
             <!-- add code for ad requests here -->
             <!--  -->
+            {% for camp in user.campaigns %}
+            {%for ad in camp.ads%}
+            {%if ad.status=='requested by influencer'%}
+            <ul class="list-group">
+              <span style="display: inline-flex;">
+                  <li class="list-group-item" style="display: flex;width: 100%;">
+                     Campaign name: {{ camp.name }} | Ad name: {{ad.name}}%|
+                  </li>
+                  <form action="{{url_for('ad_details',username=user.username,ad_id=ad.ad_id,camp_id=camp.campaign_id)}}" method="GET" style="display: flex;">
+                  <button type="submit" class="btn btn-primary">view</button>
+                  </form>
+                  <form action="{{url_for('ad_status',username=user.username,ad_id=ad.ad_id)}}" method="post" style="display: flex;">
+                    <button type="submit" class="btn btn-success" name="status" value="{{ad.influencer_id}}">Accept</button>
+                    </form>
+                    <form action="{{url_for('ad_status',username=user.username,ad_id=ad.ad_id)}}" method="post" style="display: flex;">
+                      <button type="submit" class="btn btn-danger" name="status" value="rejected by sponsor">Reject</button>
+                      </form>
+                 
+          </ul>
+          {%endif%}
+          {%endfor%}
+          {%endfor%}
           </div>
       </div>
 

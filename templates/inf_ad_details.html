@@ -10,7 +10,7 @@
 <body>
     <h1 id="heading" style="color: darkgreen;">Ad Request Id : {{ad.ad_id}}</h1>
 <div id="input-form">
-    
+    <form action="{{url_for('negotiate',username=username,ad_id=ad.ad_id)}}" method="POST">
     <p>Ad title: {{ad.name}}</p>
     <p>Campagin Name: {{ad.campaign.name}}</p>
     <p>Campagin Sponsor: <b>{{ad.campaign.sponsors.company_name}}</b></p>
@@ -25,16 +25,17 @@
     <p>Influencer: <b>{{inf.f_name}} {{inf.l_name}}</b></p>
     {%endif%}
     <p>Status: <b>{{ad.status}}</b></p>
+    {%if ad.status=='pending' or ad.status=='requested to influencer'%}
+    <label > Negotiate Budget: </label>
+    <input type="number" name="negotiate" value="{{ad.budget}}" min="{{ad.budget}}">
     
-
-
-{%if status%}
-
-<form action="{{url_for('payment',username=username,camp_id=camp_id,ad_id=ad.ad_id,status=status)}}" method="GET" style="display: inline-block; padding: 2px 0rem 0rem 5rem;">
-    <button class="btn btn-warning">Pay Now</button>
+   
+    <p ></p>
+    <button class="btn btn-warning" type="submit">Request Now</button>    
+    <!-- <button class="btn btn-success" type="submit" name="status" value="accept">Accept</button> -->
+    {%endif%}
 </form>
 
-{%endif%}
 </div>
 </body>
 </html>

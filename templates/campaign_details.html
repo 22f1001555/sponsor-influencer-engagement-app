@@ -8,46 +8,35 @@
 <body>
     <!-- navbar -->
     <nav class="navbar navbar-expand-lg bg-body-tertiary">
-        <div class="container-fluid">
-          <a class="navbar-brand" href="/">Adviser</a>
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-          </button>
-          <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-              <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="{{url_for('sp_dash',username=user.username)}}">Home</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="/{{user.username}}/campaigns">Campaigns</a>
-              </li>
-              <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  Dropdown
-                </a>
-                <ul class="dropdown-menu">
-                  <li><a class="dropdown-item" href="#">Action</a></li>
-                  <li><a class="dropdown-item" href="#">Another action</a></li>
-                  <li><hr class="dropdown-divider"></li>
-                  <li><a class="dropdown-item" href="#">Something else here</a></li>
-                </ul>
-              </li>
-
-            </ul>
-            <form class="d-flex" role="search">
-              <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-              <button class="btn btn-outline-success" type="submit" >Search</button>
-            </form>
-          </div>
-          <ul class="navbar-nav me-auto mb-1 mb-lg-0">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="/">Adviser</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
             <li class="nav-item">
-              <a class="nav-link" href="/sponsor/login" >Logout</a>
+              <a class="nav-link active" aria-current="page" href="/sponsor/{{user.username}}/dashboard">Home</a>
             </li>
-          </ul>
-        </div>
-    </nav>
+            <li class="nav-item">
+              <a class="nav-link" href="/{{user.username}}/campaigns">Campaigns</a>
+            </li>
+        
 
-<!-- end of navbar -->
+          </ul>
+          <form class="d-flex" role="search" method="get" action="{{url_for('search_inf',username=user.username)}}">
+            <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" name="query">
+            <button class="btn btn-outline-success" type="submit" >Search</button>
+          </form>
+        </div>
+        <ul class="navbar-nav me-auto mb-1 mb-lg-0">
+          <li class="nav-item">
+            <a class="nav-link" href="/sponsor/login" >Logout</a>
+          </li>
+        </ul>
+      </div>
+  </nav>
+  <!-- END OF NAVBAR -->
 <!-- CAMPAIGN DETAILS -->
 <h1 id="heading" style="color: darkgreen;">Campaign : {{camp.campaign_id}}</h1>
 <div id="container">
@@ -56,7 +45,9 @@
     <p>Category: {{camp.categories.name}}</p>
     <p>Start Date: {{camp.start_date}}</p>
     <p>End Date: {{camp.end_date}}</p>
+    <p>Campaign Budget: {{camp.initial_budget}}</p>
     <p>Remaining Budget: <b>{{camp.budget}}</b></p>
+    <p>Spent: {{camp.initial_budget - camp.budget }}</p>
     <p>Goals: {{camp.goals}}</p>
     <p>Status: <b>{{camp.status}}</b></p>
 </div>
@@ -76,7 +67,8 @@
       </div>
     </div>
     {% for ad in camp.ads %}
-    {%if ad.status=='pending' or ad.status=='accepted' %}
+    {%if ad.status=='pending' or ad.status=='requested to influencer' or ad.status=='accepted by influencer' or ad.status=='accepted by sponsor' %}
+  
     <div class="col">
       <div class="card h-100" id="cards">
         <img src="/static/ads.png" class="card-img-top" alt="...">
@@ -96,6 +88,7 @@
         
       </div>
     </div>
+
     {%endif%}
     {%endfor%}
   </div>
@@ -127,7 +120,7 @@
 </div>
 
 <!-- Rejected by influencer -->
-
+<!-- 
 <h2 style="color: blue; padding: 2rem;">Rejected Ads : </h2>   
 <div id="campaign">
 <div class="row row-cols-1 row-cols-md-3 g-4">
@@ -154,15 +147,15 @@
     {%endif%}
     {%endfor%}
   </div>
-</div>
+</div> -->
 
 <!-- Requested by influencer -->
 
-<h2 style="color: blue; padding: 2rem;">Requested Ads : </h2>   
+<h2 style="color: blue; padding: 2rem;">Ad Requests by Influencers  : </h2>   
 <div id="campaign">
 <div class="row row-cols-1 row-cols-md-3 g-4">
   {% for ad in camp.ads %}
-  {%if ad.status=='requested'%}
+  {%if ad.status=='requested by influencer' %}
     <div class="col">
       <div class="card h-100" id="cards">
         <img src="/static/ads.png" class="card-img-top" alt="...">
@@ -170,9 +163,15 @@
           <h5 class="card-title" style="text-align: center;">{{ad.name}}</h5>
           <p class="card-text" style="text-align: center;">|| {{ad.niche.name}} || {{ad.budget}} || {{ad.status}} ||</p>
         </div>
-        <form action="{{url_for('ad_details',camp_id=camp.campaign_id,ad_id=ad.ad_id,username=user.username)}}" method="GET" style="display: inline; margin-left: 5rem;">
+        <form action="{{url_for('ad_details',camp_id=camp.campaign_id,ad_id=ad.ad_id,username=user.username)}}" method="GET" style="display: inline; margin-left: 0.5rem;">
             <button class="btn btn-info" type="submit" >View</button> 
         </form>
+        <form action="{{url_for('ad_status',username=user.username,ad_id=ad.ad_id)}}" method="post" style="display: inline; margin-left: 0.35rem; margin-right: 0.25rem;">
+          <button type="submit" class="btn btn-success" name="status" value="{{ad.influencer_id}}">Accept</button>
+          </form>
+          <form action="{{url_for('ad_status',username=user.username,ad_id=ad.ad_id)}}" method="post" style="display: inline; margin: 1px;">
+            <button type="submit" class="btn btn-danger" name="status" value="rejected by sponsor">Reject</button>
+            </form>
       </div>
     </div>
     {%endif%}

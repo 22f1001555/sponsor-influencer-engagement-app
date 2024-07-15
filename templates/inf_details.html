@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Influencer Details</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="/static/style.css"> 
+</head>
+<body>
+    <h1 id="heading">Influencer Details</h1>
+    <div id="input-form">
+        <p>Influencer Name: {{inf.f_name}} {{inf.l_name}}</p>
+        <p>Category: {{inf.category.name}}</p>
+        <p>Niche: {{inf.niche.name}}</p>
+        <p>Subscribers: {{inf.subs}}</p>
+        <form action="{{url_for('inf_descriptions',username=user.username,inf_id=inf.influencer_id)}}" method="POST">
+        <div class="row g-3 align-items-center">
+            <div class="col-auto">
+            <label for="inputPassword3" class="col-form-label">Request for a campaign:</label>
+        </div>
+        <div class="col-auto">
+              <select class="form-control" id="inputPassword3" name="ad_id" required>
+                  {%for camp in user.campaigns%}
+                  {%if camp.status!='completed'%}
+                  {%for ad in camp.ads%}
+                  {%if ad.status=='pending'%}
+                  <option value="{{ad.ad_id}}">{{ad.name}}</option>
+                  {%endif%}
+                  {%endfor%}
+                  {%endif%}
+                  {%endfor%}
+              </select>
+            </div>
+          </div>
+          <div style="margin:2rem 0rem 1rem 5rem;">
+        <button class="btn btn-success" type="submit">Request</button>
+          </div>
+    </div>
+    </form>
+    </div>
+    
+</body>
+</html>

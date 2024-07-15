@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <title>Search</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+</head>
+<body>
+     <!-- another navbar for sponsors -->
+     <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="/">Adviser</a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+              <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="{{url_for('sp_dash',username=user.username)}}">Home</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/{{user.username}}/campaigns">Campaigns</a>
+              </li>
+          
+
+            </ul>
+            <form class="d-flex" role="search" method="get" action="{{url_for('search_inf',username=user.username)}}">
+              <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" name="query">
+              <button class="btn btn-outline-success" type="submit" >Search</button>
+            </form>
+          </div>
+          <ul class="navbar-nav me-auto mb-1 mb-lg-0">
+            <li class="nav-item">
+              <a class="nav-link" href="/sponsor/login" >Logout</a>
+            </li>
+          </ul>
+        </div>
+    </nav>
+
+    <!-- END OF NAVBAR -->
+<br>
+    <h1 id="heading">Search Results</h1>
+    <br>
+    <!-- Search by sponsors for influencers -->
+    {% for inf in infs %}
+    <ul class="list-group">
+      <span style="display: inline-flex;">
+          <li class="list-group-item" style="display: flex;width: 100%;">
+              Influencer: {{ inf.f_name}} {{ inf.l_name}}  | Category: {{inf.category.name}} | Niche: {{inf.niche.name}} | Subscribers: {{inf.subs}}
+          </li>
+          <form action="{{url_for('inf_descriptions',inf_id=inf.influencer_id,username=user.username)}}" method="GET" style="display: flex;">
+          <button type="submit" class="btn btn-warning">view</button>
+          </form>
+         
+      </span>
+  </ul>
+        
+    {%endfor%}
+    
+    
+</body>
+</html>

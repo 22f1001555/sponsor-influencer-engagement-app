@@ -1,5 +1,6 @@
 from flask import Flask,render_template,redirect,request,url_for,flash
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy import and_, or_
 from flask import current_app as app
 from .models import *
 from .users import *
@@ -41,8 +42,10 @@ def sp_register():
         password=request.form.get('pwd')
         company_name=request.form.get('company_name')
         budget=request.form.get('budget')
+        initial_budget=request.form.get('budget')
         industry=request.form.get('industry')
-        new_sponsor=Sponsor(username=username,password=password,company_name=company_name,budget=budget,industry=industry)
+        new_sponsor=Sponsor(username=username,password=password,company_name=company_name,
+                            budget=budget,initial_budget=initial_budget,industry=industry)
         try:
             db.session.add(new_sponsor)
             db.session.commit()
@@ -135,3 +138,58 @@ def in_dash(username):
             
     
     return render_template('influencer_dash.html',inf=inf,ads=inf_ads)
+
+@app.route('/<username>/search_influencers')                                                           # search for influencers
+def search_inf(username):
+    query = request.args.get('query')
+    sponsor=Sponsor.query.filter_by(username=username).first()
+    if not query:
+        return render_template('search_infs.html', influencers=[])
+    
+    search = "%{}%".format(query)
+    influencers = Influencer.query.filter(
+        or_((Influencer.f_name.like(search)),
+        (Influencer.l_name.like(search)),
+        (Influencer.username.like(search)),
+        (Influencer.niche.has(Niche.name.like(search))),
+        (Influencer.category.has(Category.name.like(search))),
+        (Influencer.subs.like(search))),
+        Influencer.flagged==0
+    ).all()
+    return render_template('search_infs.html', infs=influencers,user=sponsor)
+
+@app.route('/<username>/search_campaigns') 
+def search_campaign(username):
+    query = request.args.get('query')
+    inf=Influencer.query.filter_by(username=username).first()
+    if not query:
+        return render_template('search_campaigns.html', campaigns=[],inf=inf)
+
+    search = "%{}%".format(query)
+    campaigns = Campaign.query.filter(
+        and_(
+            or_(
+                Campaign.name.like(search),
+                Campaign.categories.has(Category.name.ilike(search))
+            ),
+            Campaign.visibility == 'public',
+            Campaign.flagged == 0,
+            Campaign.status != 'completed'
+        )
+    ).all()
+
+    return render_template('search_campaigns.html', camps=campaigns,inf=inf)
+
+@app.route('/<username>/influencer_details/<int:inf_id>',methods=['GET','POST'])
+def inf_descriptions(username,inf_id):
+    inf=Influencer.query.filter_by(influencer_id=inf_id).first()
+    sponsor=Sponsor.query.filter_by(username=username).first()
+    if request.method=='POST':
+        ad_id=request.form.get('ad_id')
+        print("HI ad id {ad_id}")
+        ad=Adrequest.query.filter_by(ad_id=ad_id).first()
+        ad.status='requested to influencer'
+        ad.influencer_id=inf_id
+        db.session.commit()
+        return redirect(url_for('search_inf',username=username))
+    return render_template('inf_details.html',inf=inf,user=sponsor)

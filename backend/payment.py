@@ -35,7 +35,8 @@ def payment(username,camp_id,ad_id,status):
                 db.session.commit()
             return redirect(url_for('camp_details',username=username,id=camp_id))
         else:
-            ad.status='requested'
+            
+            ad.status='requested by influencer'
             ad.negotiate_budget=(request.form.get('negotiate'))
             
             db.session.commit()

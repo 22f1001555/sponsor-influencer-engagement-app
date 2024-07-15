@@ -1,5 +1,6 @@
-from flask import Flask,render_template,redirect,request,url_for
+from flask import Flask,render_template,redirect,request,url_for,flash
 from flask import current_app as app
+from sqlalchemy.exc import IntegrityError
 from .models import *
 from .users import *
 from datetime import datetime
@@ -28,6 +29,7 @@ def new_campaign(username):
         start=request.form.get('start')
         end=request.form.get('end')
         budget=float(request.form.get('budget'))
+        initial_budget=budget
         visibility=request.form.get('visibility')
         goals=request.form.get('goals')
         start_date=datetime.strptime(start, '%Y-%m-%d')
@@ -37,7 +39,8 @@ def new_campaign(username):
             return "End date must be after start date",400
         
         new_campaign=Campaign(name=title,sponsor_id=sponsor_id,category_id=category_id,start_date=start_date.date(),
-                              end_date=end_date.date(),budget=budget,visibility=visibility,goals=goals)
+                              end_date=end_date.date(),budget=budget,initial_budget=initial_budget,
+                              visibility=visibility,goals=goals)
         
         
 #deduct the budget for the campaign,from sponsor
@@ -54,7 +57,7 @@ def new_campaign(username):
             return render_template('new_campaign.html',user=user,cat=cat)
 
 
-@app.route('/update/<username>/<int:id>',methods=['GET','POST'])                    # update a campaign
+@app.route('/<username>/update/<int:id>',methods=['GET','POST'])                    # update a campaign
 def update_camp(id,username):
     sponsor=Sponsor.query.filter_by(username=username).first()
     cat=Category.query.all()
@@ -81,9 +84,14 @@ def update_camp(id,username):
                 for ad in ads:
                     if ad.status!='completed':
                         return 'Action not possbile,one or more Active Ads',404
+            sponsor.budget=float(sponsor.budget)+float(update_camp.budget)
+            update_camp.budget=0
+            db.session.commit()
+            return redirect(url_for('campaigns',username=username))
 # if campaign budget is changed,add back the old budget to sponsor.       
         sponsor.budget=float(sponsor.budget)+float(update_camp.budget)
         update_camp.budget=float(request.form.get('budget'))
+        update_camp.initial_budget=update_camp.budget
 # then deduct the new budget.
 # if unchanged,same amount added and then deducted.
         if sponsor.budget<update_camp.budget:
@@ -98,7 +106,7 @@ def update_camp(id,username):
     
     return render_template('update_campaign.html',user=sponsor,camp=update_camp,cat=cat)
 
-@app.route('/del_camp/<username>/<int:id>')                            # delete a campaign
+@app.route('/<username>/del_camp/<int:id>')                            # delete a campaign
 def del_camp(id,username): 
         user=Sponsor.query.filter_by(username=username).first()
         camp=Campaign.query.filter_by(campaign_id=id).first()
@@ -118,9 +126,15 @@ def del_camp(id,username):
         db.session.commit()
         return redirect(url_for('campaigns',username=username))
 
-@app.route('/campaign_details/<username>/<int:id>', methods=['GET','POST'])               # campaign details
+@app.route('/<username>/campaign_details/<int:id>', methods=['GET','POST'])               # campaign details
 def camp_details(id,username):
     camp=Campaign.query.filter_by(campaign_id=id).first()
     user=camp.sponsors
     if request.method=='GET':
         return render_template('campaign_details.html',camp=camp,user=user)
+    
+
+@app.route('/<username>/campaign_descriptions/<int:id>')                # all the active campaigns shown to the influencer
+def camp_descriptions(username,id):
+    camp=Campaign.query.filter_by(campaign_id=id).first()
+    return render_template('camp_descriptions.html',camp=camp,username=username)
