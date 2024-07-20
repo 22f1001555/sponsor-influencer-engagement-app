@@ -13,7 +13,7 @@
     
     <br>
     
-    <div id="container" style="margin: 5px 300px 5px 300px; border: 2px solid grey; padding: 2em 2em 0em 2em;border-radius: 20px;" >
+    <div id="container" style="margin: 5px 300px 5px 300px; border: 2px solid grey; padding: 2em 2em 0em 2em;border-radius: 20px;box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);background-color: #fff;border: 0px solid rgb(101, 99, 99); padding: 1rem;border-radius: 15px;" >
      
       <h2 id="heading">Influencer Registration</h2>
                <form action="/influencer/register" method="POST">
@@ -60,15 +60,15 @@
                 <div>
                     <label for="social_media" >Social Media Presence : </label>
                     <div class="form-check form-check-inline" >
-                        <input class="form-check-input" type="checkbox" id="instagram" value="instagram" name="social" required>
+                        <input class="form-check-input" type="checkbox" id="instagram" value="instagram" name="social" >
                         <label class="form-check-label" for="instagram">Instagram</label>
                       </div>
                       <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox" id="Youtube" value="Youtube" name="social" required>
+                        <input class="form-check-input" type="checkbox" id="Youtube" value="Youtube" name="social" >
                         <label class="form-check-label" for="Youtube">Youtube</label>
                       </div>
                       <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox" id="Twitter" value="Twitter" name="social" required>
+                        <input class="form-check-input" type="checkbox" id="Twitter" value="Twitter" name="social" >
                         <label class="form-check-label" for="Twitter">Twitter</label>
                       </div>
                       <br><br>
@@ -76,17 +76,14 @@
                         <label for="reach">Number of Subscribers: </label>
                         <input type="number" name="reach" min="0"  required >
                       </div>
+                      <br>
+                      <div>
+                        <label for="reach">Rating: </label>
+                        <input type="number" name="rating" min="0" max="5" step="0.1" >
+                      </div>
                 </div>
-                {% with messages = get_flashed_messages(with_categories=true) %}
-                {% if messages %}
-                  <p class=flashes >
-                  {% for category, message in messages %}
-                    <h5 class="{{ category }}" style="color: red; text-align: center;">{{ message }}</h5>
-                  {% endfor %}
-                  </p>
-                {% endif %}
-              {% endwith %} 
-                <div class="col-12" style="padding: 2em .2em;">
+                
+                <div class="col-12" style="padding: 2em .2em; margin-left: 15rem;">
                     <button type="submit" class="btn btn-primary" value="Submit">Sign in</button>
                   </div>
                 </form> 

@@ -12,8 +12,8 @@
     </div>
     <br>
     <!-- <div id="container"> -->
-            <form action="/admin/login" method="POST" id="admin-login-form">
-            <div id="input-form">
+            <form action="{{url_for('ad_login')}}" method="POST" id="admin-login-form" >
+            <div id="input-form" style="box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);background-color: #fff;border: 0px solid rgb(101, 99, 99); padding: 1rem;border-radius: 15px;">
                 <h2 id="heading">Login</h2>
                 <div class="mb-3">
                     <label for="username" class="form-label">User Name</label>
@@ -23,7 +23,7 @@
                     <label for="pwd" class="form-label">Password</label>
                     <input type="password" class="form-control" name="pwd" placeholder="1234" required>
                 </div>
-                <div class="mb-3">
+                <div class="mb-3" style="margin-left: 4rem ;">
                     <button type="submit" class="btn btn-primary mb-3" value="Submit">Login</button>  
                 </div>
             </div>

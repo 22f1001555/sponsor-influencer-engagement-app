@@ -19,7 +19,7 @@
         <p>Budget: {{ad.budget}}</p>
         <p>Influencer: {{inf.f_name}} {{inf.l_name}}</p>
         <br>
-        {%if status=='Pay Now'%}
+        {%if ad.status=='ad req fulfilled'%}
         {%if ad.negotiate_budget==0%}
         <!-- <h5 style="color: darkblue; text-align: center;">{{ad.budget}}</h5> -->
         <div id="heading">

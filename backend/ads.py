@@ -45,10 +45,10 @@ def new_ad(id,username):
         try:
             db.session.add(new_ad)
             db.session.commit()
+            return redirect(url_for('camp_details',id=id,username=username))
         except IntegrityError:
             db.session.rollback()
             flash('Ad already exists','error')
-        return redirect(url_for('camp_details',id=id,username=username))
         
 
     return render_template('new_ad.html',camp=camp,infs=infs,niches=niches,username=username)
@@ -107,20 +107,25 @@ def del_ad(ad_id,username,camp_id):
 def ad_details(username,camp_id,ad_id):
     ad=Adrequest.query.filter_by(ad_id=ad_id).first()
     inf=Influencer.query.filter_by(influencer_id=ad.influencer_id).first()
-    if ad.status=='accepted by influencer' or ad.status=='accepted by sponsor' :
-        return render_template('ad_details.html',ad=ad,camp_id=camp_id,username=username,inf=inf,status='Pay Now')
+    if ad.status=='completed' :
+        return render_template('ad_details.html',ad=ad,camp_id=camp_id,username=username,inf=inf,status='ad req fulfilled')
     else:
         return render_template('ad_details.html',ad=ad,camp_id=camp_id,username=username,inf=inf)
 
 # add details only for influencer
-@app.route('/<username>/ad_details/<int:ad_id>')
+@app.route('/<username>/ad_details/<int:ad_id>',methods=['GET','POST'])
 def inf_ad_details(username,ad_id):
     ad=Adrequest.query.filter_by(ad_id=ad_id).first()
     inf=Influencer.query.filter_by(influencer_id=ad.influencer_id).first()
-    if ad.status=='pending':
-        return render_template('inf_ad_details.html',ad=ad,username=username,inf=inf,status='Negotiate')
+    if request.method=='POST':
+        ad.status=request.form.get('status')
+        db.session.commit()
+        return redirect(url_for('in_dash',username=username))
+    else:
+        if ad.status=='pending':
+            return render_template('inf_ad_details.html',ad=ad,username=username,inf=inf,status='Negotiate')
 
-    return render_template('inf_ad_details.html',ad=ad,username=username,inf=inf)
+        return render_template('inf_ad_details.html',ad=ad,username=username,inf=inf)
 
 
 # add status

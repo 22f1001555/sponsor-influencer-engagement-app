@@ -28,9 +28,107 @@ def ad_login():
             return 'user not found',404
         else:
             if password==user.password:
-                return render_template('admin_dashboard.html')
+                return redirect(url_for('admin_dash'))
             else:
                 return 'incorrect Credentials',404
+
+
+@app.route('/admin/dashboard')                                  # admin dashboard
+def admin_dash():
+    sponsors=Sponsor.query.all()
+    infs=Influencer.query.all()
+    camps=Campaign.query.all()
+    return render_template('admin_dashboard.html',sponsors=sponsors,infs=infs,camps=camps)
+
+@app.route('/admin/search',methods=['GET','POST'])                                         # admin search for all
+def search_all():
+
+    if request.method=='POST':
+        query = request.form.get('query')
+        search = "%{}%".format(query)
+        campaigns = Campaign.query.filter(
+        or_(
+            Campaign.name.like(search),
+            Campaign.categories.has(Category.name.like(search))
+        )
+        ).all()
+
+        sponsors= Sponsor.query.filter(
+            or_(Sponsor.username.like(search),
+                Sponsor.company_name.like(search),
+                Sponsor.industry.like(search)
+            )
+        ).all()
+
+        influencers = Influencer.query.filter(
+        or_((Influencer.f_name.like(search)),
+        (Influencer.l_name.like(search)),
+        (Influencer.username.like(search)),
+        (Influencer.category.has(Category.name.like(search)))
+        )).all()
+        return render_template('search.html',sponsors=sponsors,influencers=influencers,campaigns=campaigns)
+    return render_template('search.html')
+
+
+@app.route('/admin/campaign/<int:camp_id>',methods=['GET','POST'])              #admin views campaign desc
+def admin_camp(camp_id):
+    camp=Campaign.query.filter_by(campaign_id=camp_id).first()
+    if request.method=='POST':
+        flag_status=int(request.form.get('flag'))
+        camp.flagged=flag_status
+        db.session.commit()
+        return redirect(url_for('search_all'))
+    return render_template("admin_campaign.html",camp=camp)
+
+@app.route('/admin/ads/<int:ad_id>')                                       # admin views ad details
+def admin_ad_details(ad_id):
+    ad=Adrequest.query.filter_by(ad_id=ad_id).first()
+    return render_template('admin_ad_details.html',ad=ad)
+
+@app.route('/admin/sponsors/<int:sponsor_id>',methods=['GET','POST'])                 #admin finds sponsors
+def admin_sponsor(sponsor_id):
+    sponsor=Sponsor.query.filter_by(sponsor_id=sponsor_id).first()
+    if request.method=='POST':
+        flag_status=int(request.form.get('flag'))
+        sponsor.flagged=flag_status
+        db.session.commit()
+        return redirect(url_for('admin_sponsor',sponsor_id=sponsor_id))
+    return render_template("admin_sponsor.html",sponsor=sponsor)
+
+@app.route('/admin/influencers/<int:inf_id>',methods=['GET','POST'])                 #admin finds influencers
+def admin_inf(inf_id):
+    inf=Influencer.query.filter_by(influencer_id=inf_id).first()
+    ads=Adrequest.query.filter_by(influencer_id=inf_id).all()
+    if request.method=='POST':
+        flag_status=int(request.form.get('flag'))
+        inf.flagged=flag_status
+        db.session.commit()
+        return redirect(url_for('admin_inf',inf_id=inf_id))
+    return render_template("admin_influencer.html",inf=inf,ads=ads)
+
+@app.route("/admin/remove/<name>",methods=['GET','POST'])               #admin removes user/campaign
+def remove(name):
+    sponsor=Sponsor.query.filter_by(username=name).first()
+    inf=Influencer.query.filter_by(username=name).first()
+    camp=Campaign.query.filter_by(name=name).first()
+        
+    if request.method=='POST':
+        print('HI about to delete')
+        if sponsor:
+            db.session.delete(sponsor)
+        if inf:
+            db.session.delete(inf)
+        if camp:
+            ads=Adrequest.query.filter_by(campaign_id=camp.campaign_id).all()
+            db.session.delete(camp)
+            for ad in ads:
+                db.session.delete(ad)
+
+        db.session.commit()
+        return redirect(url_for("admin_dash"))
+    return render_template('remove.html',name=name)
+
+
 
 
 @app.route('/sponsor/register',methods=['GET','POST'])              #sponsor registration
@@ -53,7 +151,7 @@ def sp_register():
         except IntegrityError:
             db.session.rollback()
             flash('Username or company name already exists.', 'error')
-            return redirect(url_for('sp_register'))
+            # return redirect(url_for('sp_register'))
 
 
     return render_template('sponsor_reg.html')
@@ -98,18 +196,20 @@ def in_register():
         niche_id=request.form.get('niche')
         social=request.form.get('social')
         reach=request.form.get('reach')
+        rating=request.form.get('rating')
 
         new_influencer=Influencer(username=u_name,password=pwd,f_name=f_name,l_name=l_name,
-                                  category_id=cat_id,niche_id=niche_id,social_media=social,subs=reach)
+                                  category_id=cat_id,niche_id=niche_id,social_media=social,
+                                  subs=reach,rating=rating)
         try:
             db.session.add(new_influencer)
             db.session.commit()
-            flash('sponsor registered successfully','success')
+            
             return redirect(url_for('in_login'))
         except IntegrityError:
             db.session.rollback()
-            flash('Username already exists. Please choose a different username.', 'error')
-            return redirect(url_for('in_register'))
+            flash('Username already exists.', 'error')
+            # return redirect(url_for('in_register'))
 
     return render_template('influencer_reg.html',category=cat)
 
@@ -144,7 +244,7 @@ def search_inf(username):
     query = request.args.get('query')
     sponsor=Sponsor.query.filter_by(username=username).first()
     if not query:
-        return render_template('search_infs.html', influencers=[])
+        return render_template('search_infs.html', influencers=[],user=sponsor)
     
     search = "%{}%".format(query)
     influencers = Influencer.query.filter(
@@ -186,7 +286,7 @@ def inf_descriptions(username,inf_id):
     sponsor=Sponsor.query.filter_by(username=username).first()
     if request.method=='POST':
         ad_id=request.form.get('ad_id')
-        print("HI ad id {ad_id}")
+
         ad=Adrequest.query.filter_by(ad_id=ad_id).first()
         ad.status='requested to influencer'
         ad.influencer_id=inf_id

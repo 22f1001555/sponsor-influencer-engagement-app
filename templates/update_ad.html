@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="/static/style.css"> 
 </head>
 <body>
-    <div id="panel" style="margin-top: 3rem;">
+    <div id="panel" style="margin-top: 3rem;box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);background-color: #fff;border: 0px solid rgb(101, 99, 99); padding: 1rem;border-radius: 15px;" >
     <div id="heading"><h1> Ad for Campaign: {{camp.name}}</h1></div>
     <form action="{{url_for('update_ad',camp_id=camp.campaign_id,username=username,ad_id=ad.ad_id)}}" method="POST">
                 

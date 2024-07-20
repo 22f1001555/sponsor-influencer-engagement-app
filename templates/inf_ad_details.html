@@ -9,8 +9,8 @@
 </head>
 <body>
     <h1 id="heading" style="color: darkgreen;">Ad Request Id : {{ad.ad_id}}</h1>
-<div id="input-form">
-    <form action="{{url_for('negotiate',username=username,ad_id=ad.ad_id)}}" method="POST">
+<div id="input-form" style="box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);background-color: #fff;border: 0px solid rgb(101, 99, 99); padding: 1rem;border-radius: 15px;">
+    <form action="{{url_for('negotiate',username=username,ad_id=ad.ad_id)}}" method="POST" >
     <p>Ad title: {{ad.name}}</p>
     <p>Campagin Name: {{ad.campaign.name}}</p>
     <p>Campagin Sponsor: <b>{{ad.campaign.sponsors.company_name}}</b></p>
@@ -29,9 +29,10 @@
     <label > Negotiate Budget: </label>
     <input type="number" name="negotiate" value="{{ad.budget}}" min="{{ad.budget}}">
     
-   
-    <p ></p>
-    <button class="btn btn-warning" type="submit">Request Now</button>    
+   <p></p>
+    <p style="text-align: center;">
+    <button class="btn btn-warning" type="submit" >Request Now</button>   
+</p> 
     <!-- <button class="btn btn-success" type="submit" name="status" value="accept">Accept</button> -->
     {%endif%}
 </form>

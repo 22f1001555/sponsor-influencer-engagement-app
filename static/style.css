@@ -46,11 +46,19 @@
     padding-bottom: 10px;
 }
 
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 20px;
+}
 
 #campaign{
-    border: 1px solid rgb(101, 99, 99);
+    background-color: #fff;
+    border: 0px solid rgb(101, 99, 99);
     border-radius: 15px;
-    margin: 2rem;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin: auto;
     padding: 3rem 5rem 3rem 5rem;
 }
 

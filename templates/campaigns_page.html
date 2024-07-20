@@ -43,6 +43,7 @@
 <h3 style="text-align: center;padding-bottom: 1rem;">Remaing Budget: {{user.budget}}</h3>
 <!-- ACTIVE CAMPAIGNS -->
 <h3 style="padding-left: 2rem;">Active Campaigns: </h3>
+<br>
 <div id="campaign">
 <div class="row row-cols-1 row-cols-md-3 g-4">
     <div class="col">
@@ -56,7 +57,7 @@
       </div>
     </div>
     {% for campaign in user.campaigns %}
-    {%if campaign.status=='pending' and campaign.flagged!=1 %}
+    {%if campaign.status=='active' and campaign.flagged!=1 %}
     <div class="col">
       <div class="card h-100" id="cards">
         <img src="/static/campaign.png" class="card-img-top" alt="...">
@@ -81,10 +82,11 @@
     {%endfor%}
   </div>
 </div>
-
+<br>
 <!-- COMPLETED CAMPAIGNS -->
 
 <h3 style="padding-left: 2rem;">Completed Campaigns: </h3>
+<br>
 <div id="campaign">
   <div class="row row-cols-1 row-cols-md-3 g-4">
     {% for campaign in user.campaigns %}
@@ -106,9 +108,11 @@
       {%endfor%}
     </div>
   </div>
+  <br>
 <!-- Flagged CAMPAIGNS -->
 
 <h3 style="padding-left: 2rem;">Flagged Campaigns: </h3>
+<br>
 <div id="campaign">
   <div class="row row-cols-1 row-cols-md-3 g-4">
     {% for campaign in user.campaigns %}

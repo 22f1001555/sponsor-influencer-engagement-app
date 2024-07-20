@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="/static/style.css"> 
 </head>
 <body>
-    <div id="panel" style="margin-top: 3rem;">
+    <div id="panel" style="margin-top: 3rem;box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);background-color: #fff;border: 0px solid rgb(101, 99, 99); padding: 1rem;border-radius: 15px;">
     <div id="heading"><h1>New Campaign</h1></div>
     <form action="{{url_for('new_campaign',username=user.username)}}" method="post">
                 <div class="row mb-3">
@@ -64,7 +64,7 @@
                 </fieldset>
                 <div class="mb-3">
                     <label for="exampleFormControlInput1" class="form-label">Goals :</label>
-                    <textarea class="form-control" id="exampleFormControlTextarea1" rows="3" name="goals"></textarea>
+                    <textarea class="form-control" id="exampleFormControlTextarea1" rows="3" name="goals" required></textarea>
                 </div>
                 <input type="hidden" name="sponsor_id" value="{{user.sponsor_id }}">
                 {% with messages = get_flashed_messages(with_categories=true) %}

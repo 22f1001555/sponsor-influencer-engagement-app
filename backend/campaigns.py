@@ -54,7 +54,7 @@ def new_campaign(username):
         except IntegrityError:
             db.session.rollback()
             flash('Campaign already exists', 'error')
-            return render_template('new_campaign.html',user=user,cat=cat)
+            # return render_template('new_campaign.html',user=user,cat=cat)
 
 
 @app.route('/<username>/update/<int:id>',methods=['GET','POST'])                    # update a campaign
@@ -82,7 +82,7 @@ def update_camp(id,username):
                 return "Please create an Ad before marking the campaign closed",404
             else:
                 for ad in ads:
-                    if ad.status!='completed':
+                    if ad.status!='Paid':
                         return 'Action not possbile,one or more Active Ads',404
             sponsor.budget=float(sponsor.budget)+float(update_camp.budget)
             update_camp.budget=0
@@ -112,10 +112,10 @@ def del_camp(id,username):
         camp=Campaign.query.filter_by(campaign_id=id).first()
         ads=camp.ads
 # deleting a campaign,deletes all the ads in the campaign.
-# if the campaign is incomplete(pending), it adds back the budget of 
+# if the campaign is incomplete(active), it adds back the budget of 
 # all incomplete ad requests to the campaign budget.
 # unspent campaign budget adds back to the sponsor budget.
-        if camp.status=='pending':
+        if camp.status=='active':
             for ad in ads:      
                 if ad.status!='completed':
                     camp.budget=float(camp.budget)+float(ad.budget)
@@ -138,3 +138,4 @@ def camp_details(id,username):
 def camp_descriptions(username,id):
     camp=Campaign.query.filter_by(campaign_id=id).first()
     return render_template('camp_descriptions.html',camp=camp,username=username)
+

@@ -38,21 +38,48 @@
   </nav>
   <!-- END OF NAVBAR -->
 <!-- CAMPAIGN DETAILS -->
-<h1 id="heading" style="color: darkgreen;">Campaign : {{camp.campaign_id}}</h1>
-<div id="container">
-    <p>Campagin Name: <b>{{camp.name}}</b></p>
+
+<div class="container overflow-hidden text-center" id="container" style="text-align: center;box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);background-color: #fff;border: 0px solid rgb(101, 99, 99); padding: 1rem;border-radius: 15px;">
+  <h1 id="heading" style="color: darkblue;">Campaign ID: {{camp.campaign_id}}</h1>
+  {%if camp.flagged==0%}
+  <h5 hidden>Status: <b style="color: green; text-align: center;">Active</b></h5>
+  {%else%}
+  <h5>Status: <b style="color: red; text-align: center;">Flagged</b></h5>
+  {%endif%}
+  <br><br>
+  <div class="row g-2">
+    <div class="col">
+     <!-- <div class="p-3">Custom column padding</div> -->
+     <p>Campagin Name: <b>{{camp.name}}</b></p>
     <p>Sponsor: {{camp.sponsors.company_name}}</p>
     <p>Category: {{camp.categories.name}}</p>
     <p>Start Date: {{camp.start_date}}</p>
     <p>End Date: {{camp.end_date}}</p>
-    <p>Campaign Budget: {{camp.initial_budget}}</p>
-    <p>Remaining Budget: <b>{{camp.budget}}</b></p>
+    
+    </div>
+    <div class="col">
+      <!-- <div class="p-3">Custom column padding</div> -->
+      <p>Campaign Budget: {{camp.initial_budget}}</p>
+      <p>Remaining Budget: <b>{{camp.budget}}</b></p>
+    {% set ns = namespace(total=0) %}
+    {%for ad in camp.ads%}
+    {%set ns.total=ns.total+ad.budget%}
+    {%endfor%}
+    {%if camp.status=='completed'%}
+    <p>Spent: {{ns.total}}</p>
+    {%else%}
     <p>Spent: {{camp.initial_budget - camp.budget }}</p>
+    {%endif%}
     <p>Goals: {{camp.goals}}</p>
-    <p>Status: <b>{{camp.status}}</b></p>
+    <p>Campaign Status: <b>{{camp.status}}</b></p>
+    </div>
+  </div>
 </div>
+  
 <!-- LIST OF ACTIVE ADDS -->
- {%if camp.status=='pending'%}
+ <div>
+ {%if camp.flagged==0%}
+ {%if camp.status=='active' and camp.flagged==0%}
 <h2 style="color: blue; padding: 2rem;">Active Ads : </h2>   
 <div id="campaign">
 <div class="row row-cols-1 row-cols-md-3 g-4">
@@ -94,20 +121,25 @@
   </div>
 </div>
 {%endif%}
-
+{%endif%}
+</div>
 <!-- COMPLETED ADS -->
 
 <h2 style="color: blue; padding: 2rem;">Completed Ads : </h2>   
 <div id="campaign">
 <div class="row row-cols-1 row-cols-md-3 g-4">
   {% for ad in camp.ads %}
-  {%if ad.status=='completed'%}    
+  {%if ad.status=='ad req fulfilled' or ad.status=='Paid'%}    
     <div class="col">
       <div class="card h-100" id="cards">
         <img src="/static/ads.png" class="card-img-top" alt="...">
         <div class="card-body">
           <h5 class="card-title" style="text-align: center;">{{ad.name}}</h5>
+          {%if ad.negotiate_budget==0%}
           <p class="card-text" style="text-align: center;">|| {{ad.niche.name}} || {{ad.budget}} || {{ad.status}} ||</p>
+          {%else%}
+          <p class="card-text" style="text-align: center;">|| {{ad.niche.name}} || {{ad.negotiate_budget}} || {{ad.status}} ||</p>
+          {%endif%}
         </div>
         <form action="{{url_for('ad_details',camp_id=camp.campaign_id,ad_id=ad.ad_id,username=user.username)}}" method="GET" style="display: inline; margin-left: 5rem;">
             <button class="btn btn-info" type="submit" >View</button> 
