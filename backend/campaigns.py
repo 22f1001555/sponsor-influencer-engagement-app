@@ -12,17 +12,14 @@ from datetime import datetime
 def campaigns(username):
     
     campaign_user=Sponsor.query.filter_by(username=username).first()
+    cat=Category.query.all()
     if request.method=='GET':
-        return render_template('campaigns_page.html',user=campaign_user)
+        return render_template('campaigns_page.html',user=campaign_user,cat=cat)
 
 @app.route('/<username>/new_campaign',methods=['GET','POST'])               #create new campaign
 def new_campaign(username):
     user=Sponsor.query.filter_by(username=username).first()
-    cat=Category.query.all()
-    if request.method=='GET':
-        return render_template('new_campaign.html',user=user,cat=cat)
-    
-    else:
+    if request.method=='POST':
         title=request.form.get('title')
         sponsor_id=request.form.get('sponsor_id')
         category_id=request.form.get('category')
@@ -51,22 +48,24 @@ def new_campaign(username):
             db.session.add(new_campaign)
             db.session.commit()
             return redirect(url_for('campaigns',username=username))
-        except IntegrityError:
+        except IntegrityError :
             db.session.rollback()
-            flash('Campaign already exists', 'error')
+            return ('Campaign already exists')
             # return render_template('new_campaign.html',user=user,cat=cat)
 
 
 @app.route('/<username>/update/<int:id>',methods=['GET','POST'])                    # update a campaign
 def update_camp(id,username):
     sponsor=Sponsor.query.filter_by(username=username).first()
-    cat=Category.query.all()
     update_camp=Campaign.query.filter_by(campaign_id=id).first()
     ads=update_camp.ads
     
     if request.method=='POST':
-        
-        update_camp.name=request.form.get('title')
+        new_name=request.form.get('title')
+        if new_name!=update_camp.name:
+            if Campaign.query.filter_by(name=new_name).first():
+                return 'campaign already exists'
+        update_camp.name=new_name
         update_camp.category_id=request.form.get('category')
         update_camp.start=request.form.get('start')
         update_camp.end=request.form.get('end')
@@ -103,8 +102,7 @@ def update_camp(id,username):
         
         db.session.commit()
         return redirect(url_for('campaigns',username=username))
-    
-    return render_template('update_campaign.html',user=sponsor,camp=update_camp,cat=cat)
+
 
 @app.route('/<username>/del_camp/<int:id>')                            # delete a campaign
 def del_camp(id,username): 
@@ -117,9 +115,14 @@ def del_camp(id,username):
 # unspent campaign budget adds back to the sponsor budget.
         if camp.status=='active':
             for ad in ads:      
-                if ad.status!='completed':
+                if ad.status=='pending' or ad.status=='requested to influencer' :
                     camp.budget=float(camp.budget)+float(ad.budget)
-                db.session.delete(ad)
+                    db.session.delete(ad)
+                elif ad.status=='Paid':
+                    db.session.delete(ad)
+                else:
+                    return 'can not delete campaign while there are active ads'
+                
             user.budget=float(user.budget)+float(camp.budget)
 
         db.session.delete(camp)
@@ -130,8 +133,10 @@ def del_camp(id,username):
 def camp_details(id,username):
     camp=Campaign.query.filter_by(campaign_id=id).first()
     user=camp.sponsors
+    niches=Niche.query.filter_by(cat_id=id).all()
+    infs=Influencer.query.filter_by(category_id=id).all()
     if request.method=='GET':
-        return render_template('campaign_details.html',camp=camp,user=user)
+        return render_template('campaign_details.html',camp=camp,user=user,niches=niches,infs=infs)
     
 
 @app.route('/<username>/campaign_descriptions/<int:id>')                # all the active campaigns shown to the influencer

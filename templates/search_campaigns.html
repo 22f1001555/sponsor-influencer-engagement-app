@@ -19,9 +19,7 @@
               <li class="nav-item">
                 <a class="nav-link active" aria-current="page" href="/influencer/{{inf.username}}/dashboard">Home</a>
               </li>
-              <li class="nav-item">
-                <a class="nav-link" href="/stats/">Stats</a>
-              </li>
+              
 
             </ul>
             <form class="d-flex" role="search" method="get" action="{{url_for('search_campaign',username=inf.username)}}">
@@ -37,36 +35,49 @@
     </nav>
    
     <!-- END OF NAVBAR -->
-<br>
-    <h1 id="heading">Search Results</h1>
-    <br>
+
     
     {%if camps%}
+    <br>
+    <h1 id="heading">Search Results</h1>
+    <br>
     <div style="box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);background-color: #fff;border: 0px solid rgb(101, 99, 99); padding: 1rem;border-radius: 15px;">
     <!-- Search by influencers for campaigns -->
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th scope="col">Campaign ID</th>
+          <th scope="col">Campaign Title</th>
+          <th scope="col">Sponsor</th>
+          <th scope="col">Goals</th>
+          <th scope="col">Budget</th>
+          <th scope="col" style="padding-left: 20rem;">Action</th>
+
+        </tr>
+      </thead>
+      
+        {%endif%}
+        <tbody>
     {% for camp in camps %}
+     
+    <tr style="width: auto;">
+        
+      <td>{{camp.campaign_id}}</td>
+      <td>{{camp.name}}</td>
+      <td>{{camp.sponsors.company_name}}</td>
+      <td>{{camp.goals}}</td>
+      <td>{{camp.initial_budget}}</td>  
+      <td style="padding-left: 20rem;">
+        <form action="{{url_for('camp_descriptions',id=camp.campaign_id,username=inf.username)}}" method="GET" style="display: flex;">
+          <button type="submit" class="btn btn-warning">view</button>
+          </form>
+      </td>
 
-        <ul class="list-group">
-            <span style="display: inline-flex;">
-                <li class="list-group-item" style="display: flex;width: 100%;">
-                    {{ camp.name }} | {{camp.goals}}
-                </li>
-                <form action="{{url_for('camp_descriptions',id=camp.campaign_id,username=inf.username)}}" method="GET" style="display: flex;">
-                <button type="submit" class="btn btn-warning">view</button>
-                </form>
-            </span>
-        </ul>
-
+    </tr>
     {%endfor%}
+      </tbody>
+    </table>
     
-    {%else%}
-    <!-- Search by sponsors for influencers -->
-    {% for influencer in infs %}
-        <h1>hello update me</h1>
-    {%endfor%}
-    
-    {%endif%}
-
     </div>  
 </body>
 </html>

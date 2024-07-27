@@ -51,7 +51,7 @@ def new_ad(id,username):
             flash('Ad already exists','error')
         
 
-    return render_template('new_ad.html',camp=camp,infs=infs,niches=niches,username=username)
+    # return render_template('new_ad.html',camp=camp,infs=infs,niches=niches,username=username)
         
 @app.route('/<username>/<int:camp_id>/<int:ad_id>/update',methods=['GET','POST'])       #update ad
 def update_ad(ad_id,camp_id,username):
@@ -60,10 +60,11 @@ def update_ad(ad_id,camp_id,username):
     niches=Niche.query.filter_by(cat_id=camp.category_id).all()
     infs=Influencer.query.filter_by(category_id=camp.category_id).all()
 
-    if ad.status=='accepted by influencer':
-        return 'can not edit ad after getting accepted by an influencer!'
+    
     
     if request.method=='POST':
+        if ad.status=='accepted by influencer' or ad.status=='accepted by sponsor':
+            return 'can not edit ad after getting accepted !'
         prev_budget=ad.budget
         ad.name=request.form.get('name')
         ad.content=request.form.get('content')
@@ -71,7 +72,7 @@ def update_ad(ad_id,camp_id,username):
         ad.niche_id=request.form.get('niche_id')
         ad.budget=float(request.form.get('budget'))
         influencer_id=request.form.get('influencer_id')
-        if influencer_id=='':
+        if influencer_id=='-1':
             ad.influencer_id=-1
             ad.status='pending'
         else:
@@ -87,8 +88,8 @@ def update_ad(ad_id,camp_id,username):
         db.session.commit()
         return redirect(url_for('camp_details',username=username,id=camp_id))
     
-    return render_template('update_ad.html',ad=ad,camp=camp,infs=infs,
-                               niches=niches,username=username)
+    # return render_template('update_ad.html',ad=ad,camp=camp,infs=infs,
+    #                            niches=niches,username=username)
     
 @app.route('/del_ad/<username>/<int:camp_id>/<int:ad_id>')                            # delete a ad
 def del_ad(ad_id,username,camp_id): 
@@ -121,11 +122,11 @@ def inf_ad_details(username,ad_id):
         ad.status=request.form.get('status')
         db.session.commit()
         return redirect(url_for('in_dash',username=username))
-    else:
-        if ad.status=='pending':
-            return render_template('inf_ad_details.html',ad=ad,username=username,inf=inf,status='Negotiate')
+    # else:
+    #     if ad.status=='pending':
+    #         return render_template('inf_ad_details.html',ad=ad,username=username,inf=inf,status='Negotiate')
 
-        return render_template('inf_ad_details.html',ad=ad,username=username,inf=inf)
+    #     return render_template('inf_ad_details.html',ad=ad,username=username,inf=inf)
 
 
 # add status
@@ -150,8 +151,9 @@ def ad_status(username,ad_id):
     if sponsor and not(inf):
     
         if inf_id:
-            if ad.negotiate_budget>ad.budget:
-                if ad.campaign.budget>=ad.negotiate_budget:
+            if ad.negotiate_budget>=ad.budget:
+                # extra_budget=ad.negotiate_budget-ad.budget
+                if ad.campaign.budget+ad.budget>=ad.negotiate_budget:
                     ad.status='accepted by sponsor'
                     ad.influencer_id=inf_id.influencer_id
                 else:
@@ -166,13 +168,13 @@ def ad_status(username,ad_id):
 
     
 #negotiation for influencers
-@app.route('/<username>/negotiate/<int:ad_id>',methods=['GET','POST'])
+@app.route('/<username>/negotiate/<int:ad_id>',methods=['POST'])
 def negotiate(username,ad_id):
     ad=Adrequest.query.filter_by(ad_id=ad_id).first()
     inf=Influencer.query.filter_by(username=username).first()
     if request.method=='POST':
         negotiate=float(request.form.get('negotiate'))
-        if negotiate>float(ad.budget):
+        if negotiate>=float(ad.budget):
             ad.negotiate_budget=negotiate
             ad.status='requested by influencer'
             ad.influencer_id=inf.influencer_id
@@ -183,5 +185,5 @@ def negotiate(username,ad_id):
         db.session.commit()
         return redirect(url_for('in_dash',username=username))
     
-    return redirect(url_for('inf_ad_details',ad_id=ad_id,username=username))
+    # return redirect(url_for('inf_ad_details',ad_id=ad_id,username=username))
      

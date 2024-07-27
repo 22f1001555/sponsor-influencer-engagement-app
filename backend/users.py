@@ -77,7 +77,7 @@ def admin_camp(camp_id):
         flag_status=int(request.form.get('flag'))
         camp.flagged=flag_status
         db.session.commit()
-        return redirect(url_for('search_all'))
+        return redirect(url_for('admin_dash'))
     return render_template("admin_campaign.html",camp=camp)
 
 @app.route('/admin/ads/<int:ad_id>')                                       # admin views ad details
@@ -92,7 +92,7 @@ def admin_sponsor(sponsor_id):
         flag_status=int(request.form.get('flag'))
         sponsor.flagged=flag_status
         db.session.commit()
-        return redirect(url_for('admin_sponsor',sponsor_id=sponsor_id))
+        return redirect(url_for('admin_dash'))
     return render_template("admin_sponsor.html",sponsor=sponsor)
 
 @app.route('/admin/influencers/<int:inf_id>',methods=['GET','POST'])                 #admin finds influencers
@@ -103,7 +103,7 @@ def admin_inf(inf_id):
         flag_status=int(request.form.get('flag'))
         inf.flagged=flag_status
         db.session.commit()
-        return redirect(url_for('admin_inf',inf_id=inf_id))
+        return redirect(url_for('admin_dash'))
     return render_template("admin_influencer.html",inf=inf,ads=ads)
 
 @app.route("/admin/remove/<name>",methods=['GET','POST'])               #admin removes user/campaign
@@ -128,7 +128,55 @@ def remove(name):
         return redirect(url_for("admin_dash"))
     return render_template('remove.html',name=name)
 
+@app.route('/admin/stats')
+def stats():
+    sponsors=Sponsor.query.all()
+    infs=Influencer.query.all()
+    camps=Campaign.query.all()
+    ads=Adrequest.query.all()
+    camp_count={'active':0,'completed':0,'flagged':0}
+    for camp in camps:
+        if camp.flagged:
+            camp_count['flagged']+=1
+        else:
+            if camp.status=='completed':
+                camp_count['completed']+=1
+            else:
+                camp_count['active']+=1
+    sp_budget=[]
+    sp_camp=[]
+    for sponsor in sponsors:
+        sponsor_budget={}
+        
+        sponsor_budget['name']=sponsor.company_name
+        sponsor_budget['budget']=sponsor.budget
+        sponsor_budget['spent']=sponsor.initial_budget-sponsor.budget
+        sp_budget.append(sponsor_budget)
+        
+        for camp in sponsor.campaigns:
+            campaigns={}
+            campaigns['sponsors']=sponsor.company_name
+            campaigns['name']=camp.name
+            campaigns['budget']=camp.initial_budget
+            sp_camp.append(campaigns)
+    inf_income=[]
+    for inf in infs:
+        inf_s={}
+        inf_s['name']=inf.f_name +' '+inf.l_name
+        inf_s['earnings']=inf.earnings
+        inf_income.append(inf_s)
+    ad_count={'pending':0,'ongoing':0,'completed':0}
+    for ad in ads:
+        if ad.status=='pending' or ad.status=='requested by influencer' or ad.status=='requested to influencer' :
+            ad_count['pending']+=1
+        elif ad.status=='Paid' or  ad.status=='ad req fulfilled' :
+            ad_count['completed']+=1
+        else:
+            ad_count['ongoing']+=1
+        
 
+    return render_template('stats.html',camp_count=camp_count,sponsor_budget=sp_budget,
+                           inf_income=inf_income,ad_count=ad_count,sp_camp=sp_camp)
 
 
 @app.route('/sponsor/register',methods=['GET','POST'])              #sponsor registration
@@ -213,7 +261,7 @@ def in_register():
 
     return render_template('influencer_reg.html',category=cat)
 
-@app.route('/influencer/login',methods=['GET','POST'])                          # influencer login
+@app.route('/influencer/login',methods=['GET','POST'])                      # influencer login
 def in_login():
     if request.method=='GET':
         return render_template('influencer_login.html')
@@ -229,7 +277,7 @@ def in_login():
             else:
                 return 'incorrect Credentials',404
 
-@app.route('/influencer/<username>/dashboard',methods=['GET','POST'])                          # influencer dashboard
+@app.route('/influencer/<username>/dashboard',methods=['GET','POST'])                # influencer dashboard
 def in_dash(username):
     inf=Influencer.query.filter_by(username=username).first()
     inf_ads=Adrequest.query.filter_by(influencer_id=inf.influencer_id).all()
@@ -239,7 +287,7 @@ def in_dash(username):
     
     return render_template('influencer_dash.html',inf=inf,ads=inf_ads)
 
-@app.route('/<username>/search_influencers')                                                           # search for influencers
+@app.route('/<username>/search_influencers')                                      # search for influencers
 def search_inf(username):
     query = request.args.get('query')
     sponsor=Sponsor.query.filter_by(username=username).first()
@@ -293,3 +341,4 @@ def inf_descriptions(username,inf_id):
         db.session.commit()
         return redirect(url_for('search_inf',username=username))
     return render_template('inf_details.html',inf=inf,user=sponsor)
+

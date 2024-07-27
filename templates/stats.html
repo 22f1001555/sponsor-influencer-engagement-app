@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>stats</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.min.js" integrity="sha512-L0Shl7nXXzIlBSUUPpxrokqq4ojqgZFQczTYlGjzONGTDAcLremjwaWv5A+EDLnxhQzY5xUZPWLOLqYRkY0Cbw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        .chart-container {
+            max-width: max-content;
+            display: inline-flex;
+            margin: 1rem;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body> 
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="/">Adviser</a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+              <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="{{url_for('admin_dash')}}">Home</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/admin/search">Search</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{{url_for('stats')}}">Stats</a>
+              </li>
+            </ul>
+
+          </div>
+          <ul class="navbar-nav me-auto mb-1 mb-lg-0">
+            <li class="nav-item">
+              <a class="nav-link" href="/admin/login" >Logout</a>
+            </li>
+          </ul>
+        </div>
+    </nav>
+    <!-- END OF NAVBAR -->
+     <br><br>
+    <h1>Statistics</h1>
+    <br><br>
+    <div class="chart-container" >
+    <canvas id="doughnutchart" width="300" height="400"></canvas>
+    </div>
+    <script>
+        var ctx=document.getElementById("doughnutchart").getContext('2d')
+        const campcount={{camp_count|tojson}};
+        var doughnutchart= new Chart(ctx, {
+            type:'doughnut',
+            data:{
+                 labels: ['Active', 'Completed', 'Flagged'],
+                datasets:[
+                    {
+                    label: 'campaign status',
+                    data: [campcount.active,campcount.completed,campcount.flagged],
+                    backgroundColor: [
+                        'rgb(255, 99, 132)',
+                        'rgb(54, 162, 235)',
+                        'rgb(255, 205, 86)'
+                        ],
+                    }]
+            },
+            options:{
+                responsive: false,
+                plugins: {
+                title: {
+                    display: true,
+                    text: 'Campaign Status Distribution'
+                }
+            },
+            }
+        });
+    </script>
+    <div class="chart-container" >
+        <canvas id="bar" width="300" height="400"></canvas>
+    </div>
+    <script>
+        var ctx2=document.getElementById("bar").getContext('2d')
+        const sponsorbudget={{sponsor_budget|tojson}};
+        var barchart= new Chart(ctx2, {
+            type:'bar',
+            data:{
+                 labels:sponsorbudget.map(sponsor=>sponsor.name) ,
+                datasets:[
+                    
+                {
+                    label: 'Spent on campaigns',
+                    data: sponsorbudget.map(sponsor=>sponsor.spent) ,
+                    backgroundColor: '#ff6384'
+                    },
+                    {
+                    label: 'Remaining Budget',
+                    data: sponsorbudget.map(sponsor=>sponsor.budget) ,
+                    backgroundColor: '#36a2eb'
+                    },
+                    
+
+                ]
+            },
+            options:{
+                responsive: false,
+                scales: {
+                x: {
+                    stacked: true
+                },
+                y: {
+                    stacked: true,
+                    beginAtZero: true
+            }
+        },
+        plugins: {
+                title: {
+                    display: true,
+                    text: 'Sponsor Budget and Spending'
+                }
+            }
+    }
+        });
+
+        
+    </script>
+
+<div class="chart-container" >
+    <canvas id="infs" width="300" height="400"></canvas>
+</div>
+<script>
+    var ctx3=document.getElementById("infs").getContext('2d')
+    const infs={{inf_income|tojson}};
+    var barchart= new Chart(ctx3, {
+        type:'bar',
+        data:{
+             labels:infs.map(inf=>inf.name) ,
+            datasets:[
+                
+                {
+                label: 'Net Income',
+                data: infs.map(inf=>inf.earnings) ,
+                backgroundColor: ['rgba(90, 162, 235, 0.4)',
+      'rgba(153, 102, 255, 0.4)',
+      'rgba(201, 203, 207, 0.4)']
+                },
+
+            ]
+        },
+        options:{
+            responsive: false,
+            scales: {
+            x: {
+                stacked: false
+            },
+            y: {
+                stacked: false,
+                beginAtZero: true
+        }
+    },
+    plugins: {
+            title: {
+                display: true,
+                text: 'Influencer Earnings'
+            }
+        }
+}
+    });
+
+    
+</script>
+
+<div class="chart-container" >
+    <canvas id="ads" width="300" height="400"></canvas>
+    </div>
+    <script>
+        var ctx4=document.getElementById("ads").getContext('2d')
+        const adcount={{ad_count|tojson}};
+        var ads= new Chart(ctx4, {
+            type:'pie',
+            data:{
+                 labels: ['Pending','Ongoing','Completed'],
+                datasets:[
+                    {
+                    label: 'Ad count',
+                    data: [adcount.pending,adcount.ongoing,adcount.completed],
+                    backgroundColor: [
+                        'rgb(11, 99, 132,0.5)',
+                        'rgb(54, 190, 200,0.5)',
+                        'rgb(25, 205, 86,0.5)'
+                        ],
+                    }]
+            },
+            options:{
+                responsive: false,
+                plugins: {
+                title: {
+                    display: true,
+                    text: 'Ad Status Distribution'
+                }
+            },
+            }
+        });
+    </script>
+    <div class="chart-container" >
+        <canvas id="campaigns" width="300" height="400"></canvas>
+    </div>
+    <script>
+        var ctx5=document.getElementById("campaigns").getContext('2d')
+        const spcamp={{sp_camp|tojson}};
+        var barchart= new Chart(ctx5, {
+            type:'bar',
+            data:{
+                 labels:spcamp.map(s=>s.name) ,
+                datasets:[
+                    
+                    {
+                    label: 'campaigns',
+                    data: spcamp.map(s=>s.budget) ,
+                    backgroundColor: ['rgba(90, 162, 235, 0.4)',
+          'rgba(153, 102, 255, 0.4)',
+          'rgba(201, 203, 207, 0.4)']
+                    },
+    
+                ]
+            },
+            options:{
+                responsive: true,
+                scales: {
+                x: {
+                    stacked: false
+                },
+                y: {
+                    stacked: false,
+                    beginAtZero: true
+            }
+        },
+        plugins: {
+                title: {
+                    display: true,
+                    text: 'Sponsors Campaign'
+                }
+            }
+    }
+        });
+    
+        
+    </script>
+
+    
+</body>
+</html>

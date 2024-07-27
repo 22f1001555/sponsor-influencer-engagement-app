@@ -4,10 +4,11 @@
     <title>Sponsor</title>
     <link rel="stylesheet" href="/static/style.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-</head>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+  </head>
 <body>
-    <nav class="navbar navbar-expand-lg bg-body-tertiary">
-        <div class="container-fluid">
+    <nav class="navbar navbar-expand-lg bg-body-tertiary" >
+        <div class="container-fluid" >
           <a class="navbar-brand" href="/">Adviser</a>
           <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -18,7 +19,7 @@
                 <a class="nav-link active" aria-current="page" href="#">Home</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="/{{user.username}}/campaigns">Campaigns</a>
+                <a class="nav-link" href="{{url_for('campaigns',username=user.username)}}">Campaigns</a>
               </li>
           
 
@@ -36,20 +37,39 @@
         </div>
     </nav>
     <!-- END OF NAVBAR -->
+
+
+    
     <div style="margin: 2rem 0rem 5rem 1rem;">
-      <h1>Welcome, <span style="color: blue;">{{user.company_name}}</span></h1>
+      <h1>Welcome, <span style="color: rgb(101, 101, 192);">{{user.company_name}}</span></h1>
       <h5 style="padding-top: 1rem;">Available Budget: {{user.budget}}</h5>
     </div>
 
     <div style="box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);background-color: #fff;border: 0px solid rgb(101, 99, 99); padding: 1rem;border-radius: 15px;">
       <h5 style="margin: 0rem 0rem 2rem 1rem;">Active Campaigns :</h5>
       <div id="container" style="border: 1px ;">
+        {%if user.campaigns%}
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th scope="col">Campaign ID</th>
+              <th scope="col">Title</th>
+              <th scope="col">Budget</th>
+              <th scope="col">Type</th>
+              <th scope="col">Progress</th>
+              <th scope="col" style="padding-left: 14rem;">Action</th>
+
+            </tr>
+          </thead>
+          
+        {%endif%}
+        <tbody> 
     {% for camp in user.campaigns %}
     {%if camp.status=='active' and camp.flagged!=1%}
         {% set ns = namespace(completed=0, total=0) %}
         
         {% for ad in camp.ads %}
-            {% if ad.status == 'Paid' %}
+            {% if ad.status == 'Paid' or ad.status == 'ad req fulfilled' %}
                 {% set ns.completed = ns.completed + 1 %}
             {% endif %}
             {% set ns.total = ns.total + 1 %}
@@ -57,28 +77,145 @@
         
         {% set progress = 0 if ns.total == 0 else (ns.completed * 100) / ns.total %}
               
-              
-              <ul class="list-group">
-                  <span style="display: inline-flex;">
-                      <li class="list-group-item" style="display: flex;width: 100%;">
-                          {{ camp.campaign_id }}. {{ camp.name }} | Progress: {{ progress | round(2) }}%|
-                      </li>
-                      <form action="{{url_for('camp_details',username=user.username,id=camp.campaign_id)}}" method="GET" style="display: flex;">
-                      <button type="submit" class="btn btn-warning">view</button>
-                      </form>
-                      <!-- <button type="button" class="btn btn-warning">edit</button>
-                      <button type="button" class="btn btn-danger">delete</button> -->
-                  </span>
-              </ul>
+        <tr style="width: auto;">
+        
+          <td>{{camp.campaign_id}}</td>
+          <td>{{camp.name}}</td>
+          <td>{{camp.initial_budget}}</td> 
+          <td>{{camp.visibility}}</td> 
+          <td><b>{{ progress | round(2) }}%</b></td> 
+          <td style="padding-left: 14rem;display: flex;">  
+            <form action="{{url_for('camp_details',username=user.username,id=camp.campaign_id)}}" method="GET" style="display: flex;">
+              <button type="submit" class="btn btn-warning">view</button>
+              </form>
+          </td>
+        </tr>
               
             {%endif%}
             {% endfor %}
+        </tbody>
+        </table>
           </div>
+      <!--  ad requests by influencer-->
+      <div>
+        <h5 style="margin: 0rem 0rem 2rem 1rem;">Requests By influencers:</h5>
+          <div id="container" style="border: 1px ;">
+            <!-- add code for ad requests here -->
+            <!--  -->
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th scope="col">Ad ID</th>
+                  <th scope="col">Campaign</th>
+                  <th scope="col">Ad Title</th>
+                  <th scope="col">Budget</th>
+                  <th scope="col">Requested Amount</th>
+                  
+                  
+                  <th scope="col" style="padding-left: 18rem;">Action</th>
+    
+                </tr>
+              </thead>
+            {% for camp in user.campaigns %}
+            {%if camp.flagged!=1%}
+            <tbody>
+            {%for ad in camp.ads%}
+            {%if ad.status=='requested by influencer'%}
+          
+          <tr>
+            <td>{{ad.ad_id}}</td>
+            <td>{{camp.name}}</td>
+            <td>{{ad.name}}</td>
+            <td>{{ad.budget}}</td>
+            <td>{{ad.negotiate_budget}}</td>
+            
+             <td style="padding-left: 14rem;display: flex;">
+              <!-- <form action="{{url_for('ad_details',username=user.username,ad_id=ad.ad_id,camp_id=camp.campaign_id)}}" method="GET" style="display: flex;"> -->
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#viewad{{ad.ad_id}}">view</button>
+                <!-- </form> -->
+                  <!-- view ad modal -->
+<div class="modal fade" id="viewad{{ad.ad_id}}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <form action="{{url_for('payment',username=user.username,camp_id=camp.campaign_id,ad_id=ad.ad_id,status=status)}}" method="GET" style="display: inline-block; padding: 2px 0rem 0rem 5rem;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="viewad{{ad.ad_id}}">Ad {{ad.ad_id}} Details</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>Ad title: {{ad.name}}</p>
+        <p>Campagin Name: {{ad.campaign.name}}</p>
+        <p>Campagin Sponsor: <b>{{ad.campaign.sponsors.company_name}}</b></p>
+        <p>Requirements: <b>{{ad.content}}</b></p>
+        <p>Category: {{ad.campaign.categories.name}}</p>
+        <p>Niche: {{ad.niche.name}}</p>
+        <p>Budget: <b>{{ad.budget}}</b></p>
+        {%if ad.negotiate_budget>0%}
+        <p style="color: red;" >Requested Payment: <b >{{ad.negotiate_budget}}</b></p>
+        {%endif%}
+        {% if ad.influencer_id!=-1 and ad.status != 'requested by influencer'%}
+        <p>Influencer: <b>{{ad.influencers.f_name}} {{ad.influencers.l_name}}</b></p>
+        {%endif%}
+        <p>Status: <b>{{ad.status}}</b></p>
+        
+    
+    
+    
+    
+    
+        
+    
+    
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        {%if ad.status=='ad req fulfilled'%}
+        <button class="btn btn-warning">Pay Now</button>
+        {%endif%}
+      </div>
+    </div>
+  </form>
+  </div>
+</div>
+                <form action="{{url_for('ad_status',username=user.username,ad_id=ad.ad_id)}}" method="post" style="display: flex;">
+                  <button type="submit" class="btn btn-success" name="status" value="{{ad.influencer_id}}">Accept</button>
+                  </form>
+                  <form action="{{url_for('ad_status',username=user.username,ad_id=ad.ad_id)}}" method="post" style="display: flex;">
+                    <button type="submit" class="btn btn-danger" name="status" value="rejected by sponsor">Reject</button>
+                    </form>
+             </td>
 
+
+          </tr>
+            
+          {%endif%}
+          {%endfor%}
+            </tbody>
+          {%endif%}
+          {%endfor%}
+            </table>
+          </div>
+      </div>
           <!-- completed campaigns -->
             <div>
           <h5 style="margin: 0rem 0rem 2rem 1rem;">Completed Campaigns :</h5>
             <div id="container" style="border: 1px ;">
+              {%if user.campaigns%}
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th scope="col">Campaign ID</th>
+              <th scope="col">Title</th>
+              <th scope="col">Budget</th>
+              <th scope="col">Type</th>
+              <th scope="col">Progress</th>
+              <th scope="col" style="padding-left: 14rem;">Action</th>
+
+            </tr>
+          </thead>
+          
+        {%endif%}
+        <tbody> 
           {% for camp in user.campaigns %}
           {%if camp.status=='completed'%}
         {% set ns = namespace(completed=0, total=0) %}
@@ -92,67 +229,28 @@
         
         {% set progress = 0 if ns.total == 0 else (ns.completed * 100) / ns.total %}
             
-            
-              <ul class="list-group">
-                  <span style="display: inline-flex;">
-                      <li class="list-group-item" style="display: flex;width: 100%;">
-                          {{ camp.campaign_id }}. {{ camp.name }} | Progress: {{ progress | round(2) }}%|
-                      </li>
-                      <form action="{{url_for('camp_details',username=user.username,id=camp.campaign_id)}}" method="GET" style="display: flex;">
-                      <button type="submit" class="btn btn-primary">view</button>
-                      </form>
-                      <!-- <button type="button" class="btn btn-warning">edit</button>
-                      <button type="button" class="btn btn-danger">delete</button> -->
-                  </span>
-              </ul>
+        <tr style="width: auto;">
+        
+          <td>{{camp.campaign_id}}</td>
+          <td>{{camp.name}}</td>
+          <td>{{camp.initial_budget}}</td> 
+          <td>{{camp.visibility}}</td> 
+          <td><b>{{ progress | round(2) }}%</b></td> 
+          <td style="padding-left: 14rem;display: flex;"> 
+            <form action="{{url_for('camp_details',username=user.username,id=camp.campaign_id)}}" method="GET" style="display: flex;">
+              <button type="submit" class="btn btn-primary">view</button>
+              </form>
+          </td>
+        </tr> 
+  
               
             {%endif%}
 
           {% endfor %}
+        </tbody>
+        </table>
         </div>
       </div>
-
-      <!-- new ad requests -->
-      <div>
-        <h5 style="margin: 0rem 0rem 2rem 1rem;">New Requests:</h5>
-          <div id="container" style="border: 1px ;">
-            <!-- add code for ad requests here -->
-            <!--  -->
-            {% for camp in user.campaigns %}
-            {%if camp.flagged!=1%}
-            {%for ad in camp.ads%}
-            {%if ad.status=='requested by influencer'%}
-            <ul class="list-group">
-              <span style="display: inline-flex;">
-                  <li class="list-group-item" style="display: flex;width: 100%;">
-                     Campaign name: {{ camp.name }} | Ad name: {{ad.name}}|
-                  </li>
-                  <form action="{{url_for('ad_details',username=user.username,ad_id=ad.ad_id,camp_id=camp.campaign_id)}}" method="GET" style="display: flex;">
-                  <button type="submit" class="btn btn-primary">view</button>
-                  </form>
-                  <form action="{{url_for('ad_status',username=user.username,ad_id=ad.ad_id)}}" method="post" style="display: flex;">
-                    <button type="submit" class="btn btn-success" name="status" value="{{ad.influencer_id}}">Accept</button>
-                    </form>
-                    <form action="{{url_for('ad_status',username=user.username,ad_id=ad.ad_id)}}" method="post" style="display: flex;">
-                      <button type="submit" class="btn btn-danger" name="status" value="rejected by sponsor">Reject</button>
-                      </form>
-                 
-          </ul>
-          {%endif%}
-          {%endfor%}
-          {%endif%}
-          {%endfor%}
-          </div>
-      </div>
-
-
-
-
-
-
-       
-   
-
 
 </body>
 </html>

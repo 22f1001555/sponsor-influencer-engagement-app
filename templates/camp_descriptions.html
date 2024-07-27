@@ -6,6 +6,8 @@
     <title>campaigns</title>
     <link rel="stylesheet" href="/static/style.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+
 </head>
 <body>
     
@@ -23,21 +25,81 @@
     <div style="box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);background-color: #fff;border: 0px solid rgb(101, 99, 99); padding: 1rem;border-radius: 15px;" >
     <h3 id="heading"> Active Ads</h3>
     <br>
+    <table class="table table-striped">
+        <thead>
+          <tr>
+            <th scope="col">Ad ID</th>
+            <th scope="col">Campaign Title</th>
+            <th scope="col">Ad Title</th>
+            <th scope="col">Ad details</th>
+            <th scope="col">Budget</th>
+            <th scope="col" style="padding-left: 20rem;">Action</th>
+  
+          </tr>
+        </thead>
+        <tbody> 
+    {% if camp.ads%}
     {%for ad in camp.ads%}
     {%if ad.status=='pending'%}
-    <ul class="list-group">
-        <span style="display: inline-flex;">
-            <li class="list-group-item" style="display: flex;width: 100%;">
-                {{ad.name}}|| {{ad.content}} || {{ad.budget}}
-            </li>
-            <form action="{{url_for('inf_ad_details',username=username,ad_id=ad.ad_id)}}" method="GET" style="display: flex;">
-            <button type="submit" class="btn btn-primary" name="status" value="requested by influencer">view</button>
-            
-            </form></span>
-    </ul>
-            
+    <tr style="width: auto;">
+        
+        <td>{{ad.ad_id}}</td>
+        <td>{{camp.name}}</td>
+        <td>{{ad.name}}</td>
+        <td>{{ad.content}}</td>
+        <td>{{ad.budget}}</td>  
+        <td style="padding-left: 20rem;">
+            <!-- <form action="{{url_for('inf_ad_details',username=username,ad_id=ad.ad_id)}}" method="GET" style="display: flex;"> -->
+                <!-- <button type="submit" class="btn btn-primary" name="status" value="requested by influencer">view</button> -->
+                <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#viewadd{{ad.ad_id}}">view</button>
+                    
+                    <form action="{{url_for('negotiate',username=username,ad_id=ad.ad_id)}}" method="POST" >
+                    <div class="modal fade" id="viewadd{{ad.ad_id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                          <div class="modal-content">
+                            <div class="modal-header">
+                              <h5 class="modal-title" id="exampleModalLabel">Ad Details</h5>
+                              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            
+                            <div class="modal-body">
+                            
+                            <p>Ad title: {{ad.name}}</p>
+                            <p>Campagin Name: {{ad.campaign.name}}</p>
+                            <p>Campagin Sponsor: <b>{{ad.campaign.sponsors.company_name}}</b></p>
+                            <p>Requirements: <b>{{ad.content}}</b></p>
+                            <p>Category: {{ad.campaign.categories.name}}</p>
+                            <p>Niche: {{ad.niche.name}}</p>
+                            <p>Budget: <b>{{ad.budget}}</b></p>
+                            
+                            <label > Negotiate Budget: </label>
+                            <input type="number" name="negotiate" value="{{ad.budget}}" min="{{ad.budget}}">
+                            
+                            </div>
+                            <div class="modal-footer">
+                              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                              <button type="submit" class="btn btn-warning" data-bs-dismiss="modal">Request</button>
+                            </div>
+                        
+                          </div>
+                        </div>
+                      </div>
+                    </form>
+                
+        </td>
+    </tr>
             {%endif%}
             {%endfor%}
+            {%else%}
+            <td></td>
+        <td></td>
+        <td></td>
+        <td>No active ads</td>
+        <td></td>  
+        <td></td>
+            {%endif%}
+        </tbody>
+    </table>
     </div>
 </body>
 </html>

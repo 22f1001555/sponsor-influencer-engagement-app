@@ -4,6 +4,7 @@
     <title>campaign details</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="stylesheet" href="/static/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 </head>
 <body>
     <!-- navbar -->
@@ -40,17 +41,18 @@
 <!-- CAMPAIGN DETAILS -->
 
 <div class="container overflow-hidden text-center" id="container" style="text-align: center;box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);background-color: #fff;border: 0px solid rgb(101, 99, 99); padding: 1rem;border-radius: 15px;">
-  <h1 id="heading" style="color: darkblue;">Campaign ID: {{camp.campaign_id}}</h1>
+  <h1 id="heading" style="color: darkblue;">{{camp.name}} </h1>
+  <h4 id="heading" style="color: darkblue;">{{camp.visibility}} Campaign</h4>
   {%if camp.flagged==0%}
   <h5 hidden>Status: <b style="color: green; text-align: center;">Active</b></h5>
   {%else%}
   <h5>Status: <b style="color: red; text-align: center;">Flagged</b></h5>
   {%endif%}
-  <br><br>
+  <br>
   <div class="row g-2">
     <div class="col">
      <!-- <div class="p-3">Custom column padding</div> -->
-     <p>Campagin Name: <b>{{camp.name}}</b></p>
+     <!-- <p>Campagin Name: <b>{{camp.name}}</b></p> -->
     <p>Sponsor: {{camp.sponsors.company_name}}</p>
     <p>Category: {{camp.categories.name}}</p>
     <p>Start Date: {{camp.start_date}}</p>
@@ -71,7 +73,7 @@
     <p>Spent: {{camp.initial_budget - camp.budget }}</p>
     {%endif%}
     <p>Goals: {{camp.goals}}</p>
-    <p>Campaign Status: <b>{{camp.status}}</b></p>
+    <!-- <p>Campaign Status: <b>{{camp.status}}</b></p> -->
     </div>
   </div>
 </div>
@@ -85,11 +87,87 @@
 <div class="row row-cols-1 row-cols-md-3 g-4">
     <div class="col">
       <div class="card h-100" id="cards">
-        <a href="{{url_for('new_ad',username=user.username,id=camp.campaign_id)}}"><img src="/static/add.png" class="card-img-top" alt="..."></a>
+        <img src="/static/add.png" class="card-img-top" alt="...">
         <div class="card-body">
-            <form action="{{url_for('new_ad',username=user.username,id=camp.campaign_id)}}" method="GET" style="display: inline; margin: 1.5rem;">
-                <button class="btn btn-success" type="submit" >New Ad Request</button>
-            </form> 
+            
+                <button class="btn btn-success" type="button" data-bs-toggle="modal" data-bs-target="#newad" style="margin-left: 2.2rem;padding: 10px;" >New Ad Request</button>
+            
+                          <!-- Modal -->
+  <div class="modal fade" id="newad" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content" style="width: 155%;">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Create New Ad</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form action="{{url_for('new_ad',id=camp.campaign_id,username=user.username)}}" method="post">
+        <div class="modal-body">
+          
+            <div class="row mb-3">
+              <label for="inputEmail3" class="col-sm-2 col-form-label">Ad Title </label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control" id="inputEmail3" name="name" required>
+              </div>
+            </div>
+            
+            <div class="row mb-3">
+                <label for="inputPassword3" class="col-sm-2 col-form-label">Requirement </label>
+                <div class="col-sm-10">
+                  <input type="text" class="form-control" id="inputPassword3" name="content" required>
+                </div>
+              </div>
+              <div class="row mb-3">
+                <label for="inputPassword3" class="col-sm-2 col-form-label">Budget </label>
+                <div class="col-sm-10">
+                  <input type="number" class="form-control" id="inputPassword3" name="budget" min="1" max="{{camp.budget}}"  required>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <label for="inputPassword3" class="col-sm-2 col-form-label">Niche</label>
+                <div class="col-sm-10">
+                  <select class="form-control" id="inputPassword3" name="niche_id" required>
+                      {%for niche in niches%}
+                      <option value="{{niche.niche_id}}">{{niche.name}}</option>
+                      {%endfor%}
+                  </select>
+                </div>
+              </div>
+
+            <div class="row mb-3">
+                <label for="inputPassword3" class="col-sm-2 col-form-label">Assign an Influencer</label>
+                <div class="col-sm-10">
+                  <select class="form-control" id="inputPassword3" name="influencer_id" >
+                    <option value="">None</option>
+                      {%for inf in infs%}
+                      <option value="{{inf.influencer_id}}">{{inf.username}}</option>
+                      {%endfor%}
+                  </select>
+                </div>
+              </div>
+              {% with messages = get_flashed_messages(with_categories=true) %}
+              {% if messages %}
+                <p class=flashes >
+                {% for category, message in messages %}
+                  <h5 class="{{ category }}" style="color: red; text-align: center;">{{ message }}</h5>
+                {% endfor %}
+                </p>
+              {% endif %}
+            {% endwith %} 
+            <input type="hidden" name="campaign_id" value="{{camp.campaign_id }}">
+            
+        
+
+
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-success"  style="display: inline;">Create</button>
+        </div>
+      </form>
+      </div>
+    </div>
+  </div>
         </div>
       </div>
     </div>
@@ -101,14 +179,15 @@
         <img src="/static/ads.png" class="card-img-top" alt="...">
         <div class="card-body">
           <h5 class="card-title" style="text-align: center;">{{ad.name}}</h5>
-          <p class="card-text" style="text-align: center;">|| {{ad.niche.name}} || {{ad.budget}} || {{ad.status}} ||</p>
+          <p class="card-text" style="text-align: center;"> || {{ad.budget}} || {{ad.status}} ||</p>
         </div>
-        <form action="{{url_for('ad_details',camp_id=camp.campaign_id,ad_id=ad.ad_id,username=user.username)}}" method="GET" style="display: inline; margin-left: 0.5rem;">
-            <button class="btn btn-info" type="submit" >View</button> 
-        </form>
-        <form action="{{url_for('update_ad',camp_id=camp.campaign_id,username=user.username,ad_id=ad.ad_id)}}" method="GET" style="display: inline; margin-left: 0.35rem; margin-right: 0.25rem;">
-            <button class="btn btn-warning" type="submit" >Update</button> 
-        </form>
+        
+            <button class="btn btn-info" type="button" data-bs-toggle="modal" data-bs-target="#viewad{{ad.ad_id}}" style="margin-left: 1rem;">View</button> 
+       
+         
+        
+            <button class="btn btn-warning" type="button" data-bs-toggle="modal" data-bs-target="#updatead{{ad.ad_id}}" >Update</button> 
+        
         <form action="{{url_for('del_ad',username=user.username,ad_id=ad.ad_id,camp_id=camp.campaign_id)}}" method="GET" style="display: inline; margin: 1px;" >
             <button  class="btn btn-danger" type="Submit">Delete</button>    
         </form>
@@ -136,14 +215,14 @@
         <div class="card-body">
           <h5 class="card-title" style="text-align: center;">{{ad.name}}</h5>
           {%if ad.negotiate_budget==0%}
-          <p class="card-text" style="text-align: center;">|| {{ad.niche.name}} || {{ad.budget}} || {{ad.status}} ||</p>
+          <p class="card-text" style="text-align: center;">|| {{ad.budget}} || {{ad.status}} ||</p>
           {%else%}
-          <p class="card-text" style="text-align: center;">|| {{ad.niche.name}} || {{ad.negotiate_budget}} || {{ad.status}} ||</p>
+          <p class="card-text" style="text-align: center;"> || {{ad.negotiate_budget}} || {{ad.status}} ||</p>
           {%endif%}
         </div>
-        <form action="{{url_for('ad_details',camp_id=camp.campaign_id,ad_id=ad.ad_id,username=user.username)}}" method="GET" style="display: inline; margin-left: 5rem;">
-            <button class="btn btn-info" type="submit" >View</button> 
-        </form>
+        
+            <button class="btn btn-info" type="button" data-bs-toggle="modal" data-bs-target="#viewad{{ad.ad_id}}" style="margin-left: 6rem;">View</button> 
+       
       </div>
     </div>
     {%endif%}
@@ -151,35 +230,7 @@
   </div>
 </div>
 
-<!-- Rejected by influencer -->
-<!-- 
-<h2 style="color: blue; padding: 2rem;">Rejected Ads : </h2>   
-<div id="campaign">
-<div class="row row-cols-1 row-cols-md-3 g-4">
-  {% for ad in camp.ads %}
-{%if ad.status=='rejected'%}  
-    <div class="col">
-      <div class="card h-100" id="cards">
-        <img src="/static/ads.png" class="card-img-top" alt="...">
-        <div class="card-body">
-          <h5 class="card-title" style="text-align: center;">{{ad.name}}</h5>
-          <p class="card-text" style="text-align: center;">|| {{ad.niche.name}} || {{ad.budget}} || {{ad.status}} ||</p>
-        </div>
-        <form action="{{url_for('ad_details',camp_id=camp.campaign_id,ad_id=ad.ad_id,username=user.username)}}" method="GET" style="display: inline; margin-left: 0.5rem;">
-          <button class="btn btn-info" type="submit" >View</button> 
-      </form>
-        <form action="{{url_for('update_ad',camp_id=camp.campaign_id,username=user.username,ad_id=ad.ad_id)}}" method="GET" style="display: inline; margin-left: 0.35rem; margin-right: 0.25rem;">
-          <button class="btn btn-warning" type="submit" >Update</button> 
-        </form>
-        <form action="{{url_for('del_ad',username=user.username,ad_id=ad.ad_id,camp_id=camp.campaign_id)}}" method="GET" style="display: inline; margin: 1px;" >
-          <button  class="btn btn-danger" type="Submit">Delete</button>    
-      </form>
-      </div>
-    </div>
-    {%endif%}
-    {%endfor%}
-  </div>
-</div> -->
+
 
 <!-- Requested by influencer -->
 
@@ -193,11 +244,11 @@
         <img src="/static/ads.png" class="card-img-top" alt="...">
         <div class="card-body">
           <h5 class="card-title" style="text-align: center;">{{ad.name}}</h5>
-          <p class="card-text" style="text-align: center;">|| {{ad.niche.name}} || {{ad.budget}} || {{ad.status}} ||</p>
+          <p class="card-text" style="text-align: center;">|| {{ad.budget}} || {{ad.status}} ||</p>
         </div>
-        <form action="{{url_for('ad_details',camp_id=camp.campaign_id,ad_id=ad.ad_id,username=user.username)}}" method="GET" style="display: inline; margin-left: 0.5rem;">
-            <button class="btn btn-info" type="submit" >View</button> 
-        </form>
+        
+            <button class="btn btn-info" type="button" data-bs-toggle="modal" data-bs-target="#viewad{{ad.ad_id}}" >View</button> 
+      
         <form action="{{url_for('ad_status',username=user.username,ad_id=ad.ad_id)}}" method="post" style="display: inline; margin-left: 0.35rem; margin-right: 0.25rem;">
           <button type="submit" class="btn btn-success" name="status" value="{{ad.influencer_id}}">Accept</button>
           </form>
@@ -210,7 +261,111 @@
     {%endfor%}
   </div>
 </div>
+<!-- Button trigger modal -->
 
+
+<!-- Modal -->
+ 
+ {%for ad in camp.ads%}
+ <!-- view ad modal -->
+<div class="modal fade" id="viewad{{ad.ad_id}}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <form action="{{url_for('payment',username=user.username,camp_id=camp.campaign_id,ad_id=ad.ad_id,status=status)}}" method="GET" style="display: inline-block; padding: 2px 0rem 0rem 5rem;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="viewad{{ad.ad_id}}">Ad {{ad.ad_id}} Details</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>Ad title: {{ad.name}}</p>
+        <p>Campagin Name: {{ad.campaign.name}}</p>
+        <p>Campagin Sponsor: <b>{{ad.campaign.sponsors.company_name}}</b></p>
+        <p>Requirements: <b>{{ad.content}}</b></p>
+        <p>Category: {{ad.campaign.categories.name}}</p>
+        <p>Niche: {{ad.niche.name}}</p>
+        <p>Budget: <b>{{ad.budget}}</b></p>
+        {%if ad.negotiate_budget>0%}
+        <p style="color: red;" >Requested Payment: <b >{{ad.negotiate_budget}}</b></p>
+        {%endif%}
+        {% if ad.influencer_id!=-1 and ad.status != 'requested by influencer'%}
+        <p>Influencer: <b>{{ad.influencers.f_name}} {{ad.influencers.l_name}}</b></p>
+        {%endif%}
+        <p>Status: <b>{{ad.status}}</b></p>
     
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        {%if ad.status=='ad req fulfilled'%}
+        <button class="btn btn-warning">Pay Now</button>
+        {%endif%}
+      </div>
+    </div>
+  </form>
+  </div>
+</div>
+ <!-- update ad modal -->
+ <div class="modal fade" id="updatead{{ad.ad_id}}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <form action="{{url_for('update_ad',camp_id=camp.campaign_id,username=user.username,ad_id=ad.ad_id)}}" method="POST" style="display: inline; margin-left: 0.35rem; margin-right: 0.25rem;">
+    <div class="modal-content" style="width: 155%;">
+      <div class="modal-header">
+        <h5 class="modal-title" id="updatead{{ad.ad_id}}">Ad {{ad.ad_id}} Details</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row mb-3">
+          <label for="inputEmail3" class="col-sm-2 col-form-label">Ad Title</label>
+          <div class="col-sm-10">
+            <input type="text" class="form-control" id="inputEmail3" name="name" value="{{ad.name}}" required>
+          </div>
+        </div>
+        
+        <div class="row mb-3">
+            <label for="inputPassword3" class="col-sm-2 col-form-label">Requirement</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control" id="inputPassword3" name="content" value="{{ad.content}}" required>
+            </div>
+          </div>
+          <div class="row mb-3">
+            <label for="inputPassword3" class="col-sm-2 col-form-label">Budget</label>
+            <div class="col-sm-10">
+              <input type="number" class="form-control" id="inputPassword3" name="budget" min="1"  value="{{ad.budget}}" required>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <label for="inputPassword3" class="col-sm-2 col-form-label">Niche</label>
+            <div class="col-sm-10">
+              <select class="form-control" id="inputPassword3" name="niche_id" required>
+                  {%for niche in niches%}
+                  <option value="{{niche.niche_id}}">{{niche.name}}</option>
+                  {%endfor%}
+              </select>
+            </div>
+          </div>
+
+        <div class="row mb-3">
+            <label for="inputPassword3" class="col-sm-2 col-form-label">Assign an Influencer</label>
+            <div class="col-sm-10">
+              <select class="form-control" id="inputPassword3" name="influencer_id"  required>
+                <option value="-1">None</option>
+                  {%for inf in infs%}
+                  <option value="{{inf.influencer_id}}">{{inf.username}}</option>
+                  {%endfor%}
+              </select>
+            </div>
+          </div>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-warning" value="Submit" style="display: inline;">Update</button>
+        
+      </div>
+    </div>
+  </form>
+  </div>
+</div>
+    {%endfor%}
 </body>
 </html>

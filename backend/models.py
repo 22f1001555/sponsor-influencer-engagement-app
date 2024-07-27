@@ -52,7 +52,7 @@ class Influencer(db.Model):
     category=db.relationship('Category', back_populates='influencers')
     niche = db.relationship('Niche', back_populates='influencers')
     admin=db.relationship('Admin', back_populates='influencers')
-    #campaigns=db.relationship('Campaign',back_populates='influencers')
+    ads=db.relationship('Adrequest',back_populates='influencers')
 
     
 
@@ -73,7 +73,6 @@ class Campaign(db.Model):
     flagged=db.Column(db.Integer,nullable=False,default=0)
     categories=db.relationship('Category',back_populates='campaigns')
     sponsors=db.relationship('Sponsor',back_populates='campaigns')
-    #influencers=db.relationship('Influencer',back_populates='campaigns')
     admin=db.relationship('Admin',back_populates='campaigns')
     ads=db.relationship('Adrequest',back_populates='campaign')
     
@@ -89,6 +88,7 @@ class Adrequest(db.Model):
     negotiate_budget=db.Column(db.Numeric(10, 2), nullable=False,default=0)
     niche=db.relationship('Niche',back_populates='adrequests')
     campaign=db.relationship('Campaign',back_populates='ads')
+    influencers=db.relationship('Influencer',back_populates='ads')
 
 class Category(db.Model):
     cat_id=db.Column(db.Integer,primary_key=True,autoincrement=True)
