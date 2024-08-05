@@ -12,13 +12,13 @@
         <p>Category: {{inf.category.name}}</p>
         <p>Niche: {{inf.niche.name}}</p>
         <p>Subscribers: {{inf.subs}}</p>
+        <p>Bio: {{inf.bio}}</p>
         <form action="{{url_for('inf_descriptions',username=user.username,inf_id=inf.influencer_id)}}" method="POST">
-        <div class="row g-3 align-items-center">
-            <div class="col-auto">
-            <label for="inputPassword3" class="col-form-label">Request for a campaign:</label>
-        </div>
-        <div class="col-auto">
-              <select class="form-control" id="inputPassword3" name="ad_id" required>
+            <div class="col-md">
+            <div class="form-floating">
+            <!-- <label for="inputPassword3" class="col-form-label">Request for a campaign:</label> -->    
+            <select class="form-select" id="floatingSelectGrid" name="ad_id" >
+                <option selected>Assign Ad</option>
                   {%for camp in user.campaigns%}
                   {%if camp.status!='completed'%}
                   {%for ad in camp.ads%}

@@ -65,7 +65,11 @@
       <p>Remaining Budget: <b>{{camp.budget}}</b></p>
     {% set ns = namespace(total=0) %}
     {%for ad in camp.ads%}
+    {%if ad.negotiate_budget==0%}
     {%set ns.total=ns.total+ad.budget%}
+      {%else%}
+      {%set ns.total=ns.total+ad.negotiate_budget%}
+      {%endif%}
     {%endfor%}
     {%if camp.status=='completed'%}
     <p>Spent: {{ns.total}}</p>

@@ -37,8 +37,8 @@
                 <br>
                 
                 <div class="form-group">
-                  <label for="category">Category :</label>
-                  <select id="category"  name="category">
+                  <select class="form-select" id="floatingSelectDisabled" aria-label="Floating label disabled select example" name="category" required>
+                    <option selected>select a Category</option>
                     {%for cat in category%}
                     <option value="{{cat.cat_id}}">{{cat.name}}</option>
                     {%endfor%}
@@ -47,8 +47,8 @@
                 <br>
                 <div class="form-group">
                   
-                  <label for="niche">Niche :</label>
-                  <select id="niche" name="niche" >
+                  <select class="form-select" id="floatingSelectDisabled" aria-label="Floating label disabled select example" name="niche" required>
+                    <option selected>select a Niche</option>
                     {%for cat in category%}
                       {%for niche in cat.niches%}
                         <option value="{{niche.niche_id}}">{{niche.name}}</option>
@@ -72,14 +72,19 @@
                         <label class="form-check-label" for="Twitter">Twitter</label>
                       </div>
                       <br><br>
-                      <div>
-                        <label for="reach">Number of Subscribers: </label>
-                        <input type="number" name="reach" min="0"  required >
+                      <div  class="input-group">
+                        <span class="input-group-text">Subscribers</span>
+                        <input type="number" class="form-control" name="reach" min="0"  required >
                       </div>
                       <br>
-                      <div>
-                        <label for="reach">Rating: </label>
-                        <input type="number" name="rating" min="0" max="5" step="0.1" >
+                      <div class="input-group">
+                        <span class="input-group-text">Rating</span>
+                        <input type="number" class="form-control" name="rating" min="0" max="5" step="0.1" >
+                      </div>
+                      <br>
+                      <div class="input-group">
+                        <span class="input-group-text">Bio</span>
+                        <textarea class="form-control" aria-label="With textarea" name="bio" placeholder="add something about you" required></textarea>
                       </div>
                 </div>
                 

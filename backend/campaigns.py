@@ -133,8 +133,8 @@ def del_camp(id,username):
 def camp_details(id,username):
     camp=Campaign.query.filter_by(campaign_id=id).first()
     user=camp.sponsors
-    niches=Niche.query.filter_by(cat_id=id).all()
-    infs=Influencer.query.filter_by(category_id=id).all()
+    niches=Niche.query.filter_by(cat_id=camp.category_id).all()
+    infs=Influencer.query.filter_by(category_id=camp.category_id).all()
     if request.method=='GET':
         return render_template('campaign_details.html',camp=camp,user=user,niches=niches,infs=infs)
     

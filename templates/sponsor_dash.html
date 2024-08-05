@@ -48,7 +48,7 @@
     <div style="box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);background-color: #fff;border: 0px solid rgb(101, 99, 99); padding: 1rem;border-radius: 15px;">
       <h5 style="margin: 0rem 0rem 2rem 1rem;">Active Campaigns :</h5>
       <div id="container" style="border: 1px ;">
-        {%if user.campaigns%}
+        {%if active_campaign=='active'%}
         <table class="table table-striped">
           <thead>
             <tr>
@@ -61,6 +61,8 @@
 
             </tr>
           </thead>
+          {%else%}
+          <p style="text-align: center;">No active campaigns</p>
           
         {%endif%}
         <tbody> 
@@ -102,6 +104,7 @@
           <div id="container" style="border: 1px ;">
             <!-- add code for ad requests here -->
             <!--  -->
+            {%if req_ads==True%}
             <table class="table table-striped">
               <thead>
                 <tr>
@@ -112,10 +115,13 @@
                   <th scope="col">Requested Amount</th>
                   
                   
-                  <th scope="col" style="padding-left: 18rem;">Action</th>
+                  <th scope="col" style="padding-left: 18rem;" >Action</th>
     
                 </tr>
               </thead>
+              {%else%}
+              <p style="text-align: center;">No Ad requests</p>
+              {%endif%}
             {% for camp in user.campaigns %}
             {%if camp.flagged!=1%}
             <tbody>
@@ -200,7 +206,7 @@
             <div>
           <h5 style="margin: 0rem 0rem 2rem 1rem;">Completed Campaigns :</h5>
             <div id="container" style="border: 1px ;">
-              {%if user.campaigns%}
+              {%if complete_camp=='completed'%}
         <table class="table table-striped">
           <thead>
             <tr>
@@ -213,6 +219,8 @@
 
             </tr>
           </thead>
+          {%else%}
+          <p>No completed Campaigns</p>
           
         {%endif%}
         <tbody> 

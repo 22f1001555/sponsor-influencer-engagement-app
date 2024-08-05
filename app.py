@@ -1,5 +1,6 @@
 from flask import Flask
 from backend.database import db
+from backend.resource import api
 app=None
 
 
@@ -10,6 +11,7 @@ def init_app():
     adviser_app.config['SQLALCHEMY_DATABASE_URI']="sqlite:///adviser_database.sqlite3"
     adviser_app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     db.init_app(adviser_app)
+    api.init_app(adviser_app)
     adviser_app.app_context().push()
 
     return adviser_app
@@ -17,6 +19,10 @@ def init_app():
 app=init_app()
 
 from backend.ads import *
+from backend.campaigns import *
+from backend.payment import *
+from backend.users import *
+
 
 if __name__=="__main__":
     app.run()

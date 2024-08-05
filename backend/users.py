@@ -128,7 +128,7 @@ def remove(name):
         return redirect(url_for("admin_dash"))
     return render_template('remove.html',name=name)
 
-@app.route('/admin/stats')
+@app.route('/admin/stats')                                      # charts for admin
 def stats():
     sponsors=Sponsor.query.all()
     infs=Influencer.query.all()
@@ -213,6 +213,7 @@ def sp_login():
         username=request.form.get('username')
         password=request.form.get('pwd')
         user=Sponsor.query.filter_by(username=username).first()
+
         if not(user):
             return 'user not found',404
         else:
@@ -225,10 +226,22 @@ def sp_login():
 def sp_dash(username):
     #if request.method=='GET':
     user = Sponsor.query.filter_by(username=username).first()
-    print(user.flagged)
+    active_campaign='completed'
+    complete_camp='active'
+    req_ads=False
+    for camp in user.campaigns:
+        if camp.status=='active':
+            active_campaign='active'
+        if camp.status=='completed':
+            complete_camp='completed'
+        for ad in camp.ads:
+            if ad.status=='requested by influencer':
+                req_ads=True
+    
     if int(user.flagged)==1:
         return 'You have been flagged, Contact Admin !',400 
-    return render_template('sponsor_dash.html',user=user)
+    return render_template('sponsor_dash.html',user=user,active_campaign=active_campaign,req_ads=req_ads,
+                           complete_camp=complete_camp)
 
 
 @app.route('/influencer/register', methods=['GET','POST'])                  # influencer registration
@@ -245,10 +258,11 @@ def in_register():
         social=request.form.get('social')
         reach=request.form.get('reach')
         rating=request.form.get('rating')
+        bio=request.form.get('bio')
 
         new_influencer=Influencer(username=u_name,password=pwd,f_name=f_name,l_name=l_name,
                                   category_id=cat_id,niche_id=niche_id,social_media=social,
-                                  subs=reach,rating=rating)
+                                  subs=reach,rating=rating,bio=bio)
         try:
             db.session.add(new_influencer)
             db.session.commit()
@@ -334,11 +348,13 @@ def inf_descriptions(username,inf_id):
     sponsor=Sponsor.query.filter_by(username=username).first()
     if request.method=='POST':
         ad_id=request.form.get('ad_id')
-
         ad=Adrequest.query.filter_by(ad_id=ad_id).first()
-        ad.status='requested to influencer'
-        ad.influencer_id=inf_id
-        db.session.commit()
-        return redirect(url_for('search_inf',username=username))
+        if ad:
+            ad.status='requested to influencer'
+            ad.influencer_id=inf_id
+            db.session.commit()
+            return redirect(url_for('search_inf',username=username))
+        else:
+            return 'assign an ad first'
     return render_template('inf_details.html',inf=inf,user=sponsor)
 
