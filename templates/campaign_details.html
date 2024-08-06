@@ -41,7 +41,7 @@
 <!-- CAMPAIGN DETAILS -->
 
 <div class="container overflow-hidden text-center" id="container" style="text-align: center;box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);background-color: #fff;border: 0px solid rgb(101, 99, 99); padding: 1rem;border-radius: 15px;">
-  <h1 id="heading" style="color: darkblue;">{{camp.name}} </h1>
+  <h2 id="heading" style="color: darkblue;">{{camp.name}} </h2>
   <h4 id="heading" style="color: darkblue;">{{camp.visibility}} Campaign</h4>
   {%if camp.flagged==0%}
   <h5 hidden>Status: <b style="color: green; text-align: center;">Active</b></h5>
@@ -51,8 +51,6 @@
   <br>
   <div class="row g-2">
     <div class="col">
-     <!-- <div class="p-3">Custom column padding</div> -->
-     <!-- <p>Campagin Name: <b>{{camp.name}}</b></p> -->
     <p>Sponsor: {{camp.sponsors.company_name}}</p>
     <p>Category: {{camp.categories.name}}</p>
     <p>Start Date: {{camp.start_date}}</p>

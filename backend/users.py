@@ -64,7 +64,8 @@ def search_all():
         or_((Influencer.f_name.like(search)),
         (Influencer.l_name.like(search)),
         (Influencer.username.like(search)),
-        (Influencer.category.has(Category.name.like(search)))
+        (Influencer.category.has(Category.name.like(search))),
+        (Influencer.niche.has(Niche.name.like(search)))
         )).all()
         return render_template('search.html',sponsors=sponsors,influencers=influencers,campaigns=campaigns)
     return render_template('search.html')

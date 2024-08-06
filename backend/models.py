@@ -1,11 +1,4 @@
 from .database import db   #. given for database to search db in current folder otherwise it looks in the root folder
-
-# class User(db.Model):
-
-#     admin_id=db.Column(db.Integer,primary_key=True,autoincrement=True)
-#     username=db.Column(db.String(),nullable=False,unique=True)
-#     password=db.Column(db.String(),nullable=False)
-#     role=db.Column(db.String(),nullable=False)
     
 
 class Admin(db.Model):

@@ -39,8 +39,46 @@
     <h1>Welcome, Admin</h1>
     <br><br>
     <div style="box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);background-color: #fff;border: 0px solid rgb(101, 99, 99); padding: 1rem;border-radius: 15px;">
-    <div>
-        <h5 style="margin: 1rem 0rem 2rem 1rem;">Ongoing Campaigns :</h5>
+    
+        <!-- active users -->
+        <h5 style="margin: 2rem 0rem 2rem 1rem;">Active Users :</h5>
+        <div id="container" style="border: 1px ;">
+          {%for sponsor in sponsors%}
+          {%if sponsor.flagged==0%}
+          <ul class="list-group">
+            <span style="display: inline-flex;">
+                <li class="list-group-item" style="display: flex;width: 100%;">
+                   Sponsor: {{sponsor.company_name }} || Industry:  {{sponsor.industry }} || Budget: {{(sponsor.budget/1000)|round(0)}}K
+                </li>
+                <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#sponsor{{sponsor.sponsor_id}}">view</button>
+                <form action="{{url_for('admin_sponsor',sponsor_id=sponsor.sponsor_id)}}" method="POST" style="display: contents;">
+                <button type="submit" class="btn btn-danger" name="flag" value="1">Flag</button></td>
+                </form>
+              </span>
+          </ul>
+          {%endif%}
+          {%endfor%}
+          <!-- active influencers -->
+          {%for inf in infs%}
+          {%if inf.flagged==0%}
+          <ul class="list-group">
+            <span style="display: inline-flex;">
+                <li class="list-group-item" style="display: flex;width: 100%;">
+                   Influencer: {{inf.f_name }} {{inf.l_name }} || Niche:  {{inf.niche.name }} || Reach: {{(inf.subs/1000)|round(0)}}K
+                </li>
+                
+                <button type="submit" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#inf{{inf.influencer_id}}">view</button>
+                <form action="{{url_for('admin_inf',inf_id=inf.influencer_id)}}" method="POST" style="display: contents;">
+                  <button type="submit" class="btn btn-danger" name="flag" value="1">Flag</button></td>
+                </form>
+              </span>
+          </ul>
+    
+          {%endif%}
+          {%endfor%}
+        </div>
+      <div>
+        <h5 style="margin: 1rem 0rem 2rem 1rem;">Active Campaigns :</h5>
         <div id="container" style="border: 1px ;">
       {% for camp in camps %}
 
@@ -63,6 +101,9 @@
                         <form action="{{url_for('admin_camp',camp_id=camp.campaign_id)}}" method="GET" style="display: flex;">
                         <button type="submit" class="btn btn-warning">view</button>
                         </form>
+                        <form action="{{url_for('admin_camp',camp_id=camp.campaign_id)}}" method="POST" style="display: contents;">
+                        <button type="submit" class="btn btn-danger" name="flag" value="1">Flag</button></td>
+                        </form>
                     </span>
                 </ul>
                 
@@ -78,39 +119,11 @@
       <ul class="list-group">
         <span style="display: inline-flex;">
             <li class="list-group-item" style="display: flex;width: 100%;">
-               Sponsor: {{sponsor.company_name }} || Industry:  {{sponsor.industry }} || Budget: {{sponsor.budget}}
+               Sponsor: {{sponsor.company_name }} || Industry:  {{sponsor.industry }} || Budget: {{(sponsor.budget/1000)|round(0)}}K
             </li>
-            <!-- <form action="{{url_for('admin_sponsor',sponsor_id=sponsor.sponsor_id)}}" method="GET" style="display: flex;"> -->
+            
             <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#sponsor{{sponsor.sponsor_id}}">view</button>
-            <!-- </form> -->
-                                       <!-- Modal -->
-  <div class="modal fade" id="sponsor{{sponsor.sponsor_id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content" >
-        <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Sponsor Details</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <p>User Name: {{sponsor.username}}</p>
-          <p>Company Name: {{sponsor.company_name}}</p>
-          <p>Industry: {{sponsor.industry}}</p>
-          <p>Opening Budget: {{sponsor.initial_budget}}</p>
-          <p>Remaining Budget: {{sponsor.budget}}</p>
-  
-          {%if sponsor.flagged==1%}
-          <p>Status: <b style="color: red;">Flagged</b></p>
-          {%else%}
-          <p>Status: <b style="color: green;">Active</b></p>
-          {%endif%}
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-
-        </div>
-      </div>
-    </div>
-  </div>
+                              
             <form action="{{url_for('admin_sponsor',sponsor_id=sponsor.sponsor_id)}}" method="POST" style="display: contents;">
             {%if sponsor.flagged==1%}
                       <button type="submit" class="btn btn-success" name="flag" value="0">Unflag</button></td>
@@ -129,39 +142,11 @@
     <ul class="list-group">
       <span style="display: inline-flex;">
           <li class="list-group-item" style="display: flex;width: 100%;">
-             Influencer: {{inf.f_name }} {{inf.l_name }} || Niche:  {{inf.niche.name }} || Reach: {{inf.subs}}
+             Influencer: {{inf.f_name }} {{inf.l_name }} || Niche:  {{inf.niche.name }} || Reach: {{(inf.subs/1000)|round(0)}}K
           </li>
-          <!-- <form action="{{url_for('admin_inf',inf_id=inf.influencer_id)}}" method="GET" style="display: flex;"> -->
+         
           <button type="submit" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#inf{{inf.influencer_id}}">view</button>
-          <!-- </form> -->
-          <div class="modal fade" id="inf{{inf.influencer_id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-              <div class="modal-content" >
-                <div class="modal-header">
-                  <h5 class="modal-title" id="exampleModalLabel">Sponsor Details</h5>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                  <p>Influencer Name: {{inf.f_name}} {{inf.l_name}}</p>
-        <p>Category: {{inf.category.name}}</p>
-        <p>Niche: {{inf.niche.name}}</p>
-        <p>Subscribers: {{inf.subs}}</p>
-        <p>Earnings: {{inf.earnings}}</p>
-        <p>Ratings: {{inf.rating|round(1)}}</p>
-        <p>Bio: {{inf.bio}}</p>
-        {%if inf.flagged==1%}
-        <p>Status: <b style="color: red;">Flagged</b></p>
-        {%else%}
-        <p>Status: <b style="color: green;">Active</b></p>
-        {%endif%}
-                </div>
-                <div class="modal-footer">
-                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        
-                </div>
-              </div>
-            </div>
-          </div>
+      
 
           <form action="{{url_for('admin_inf',inf_id=inf.influencer_id)}}" method="POST" style="display: contents;">
             {%if inf.flagged==1%}
@@ -203,6 +188,67 @@
 {%endif%}
 {%endfor%}
 
+    </div>
+    <div>
+      {%for sponsor in sponsors%}
+      <div class="modal fade" id="sponsor{{sponsor.sponsor_id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content" >
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Sponsor Details</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <p>User Name: {{sponsor.username}}</p>
+              <p>Company Name: {{sponsor.company_name}}</p>
+              <p>Industry: {{sponsor.industry}}</p>
+              <p>Opening Budget: {{sponsor.initial_budget}}</p>
+              <p>Remaining Budget: {{sponsor.budget}}</p>
+      
+              {%if sponsor.flagged==1%}
+              <p>Status: <b style="color: red;">Flagged</b></p>
+              {%else%}
+              <p>Status: <b style="color: green;">Active</b></p>
+              {%endif%}
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+    
+            </div>
+          </div>
+        </div>
+      </div>
+      {%endfor%}
+      {%for inf in infs%}
+      <div class="modal fade" id="inf{{inf.influencer_id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content" >
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Influencer Details</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <p>Influencer Name: {{inf.f_name}} {{inf.l_name}}</p>
+    <p>Category: {{inf.category.name}}</p>
+    <p>Niche: {{inf.niche.name}}</p>
+    <p>Subscribers: {{inf.subs}}</p>
+    <p>Earnings: {{inf.earnings}}</p>
+    <p>Ratings: {{inf.rating|round(1)}}</p>
+    <p>Bio: {{inf.bio}}</p>
+    {%if inf.flagged==1%}
+    <p>Status: <b style="color: red;">Flagged</b></p>
+    {%else%}
+    <p>Status: <b style="color: green;">Active</b></p>
+    {%endif%}
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+    
+            </div>
+          </div>
+        </div>
+      </div>
+      {%endfor%}
     </div>
     </div>
   </div>

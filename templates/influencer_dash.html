@@ -43,10 +43,11 @@
 
             <div class="mt-3" style="margin: 1rem; padding: 5px;">
                 <h4 style="text-align: center; padding-bottom: 2rem;">{{ inf.f_name }} {{ inf.l_name }}</h4>
+                <p style="text-align: center;color: crimson;">{{inf.bio}}</p>
                 <h4>Rating: <span >{{inf.rating|round(1)}}</span></h4>
                 <h4 >Subscribers: {{inf.subs}}</h4>
                 <h4>Earnings: {{inf.earnings}}</h4>
-                <h4>Bio: {{inf.bio}}</h4>
+                
             </div>
         </div>  
     <div class="col-md-9 main-panel">
@@ -61,7 +62,6 @@
         
                     <th scope="col">Campaign Name</th>
                     <th scope="col">Sponsor</th>
-                    <th scope="col">Ad Title</th>
                     <th scope="col">Budget</th>
                     <th scope="col">Final Payment</th>
                     <th scope="col" style="padding-left: 14rem;">Action</th>
@@ -76,7 +76,7 @@
         
         <td>{{ad.campaign.name}}</td>
         <td>{{ad.campaign.sponsors.company_name}}</td>
-        <td>{{ad.name}}</td>
+        
         <td>{{ad.budget}}</td>
         {%if ad.negotiate_budget>ad.budget%} 
                 <td>{{ad.negotiate_budget}}</td>  
@@ -150,7 +150,7 @@
                   <tr>
                     <th scope="col">Campaign Name</th>
                     <th scope="col">Sponsor</th>
-                    <th scope="col">Ad Title</th>
+                    
                     <th scope="col">Budget</th>
                     
                     <th scope="col" style="padding-left: 20rem;">Action</th>
@@ -166,7 +166,7 @@
         
                 <td>{{ad.campaign.name}}</td>
                 <td>{{ad.campaign.sponsors.company_name}}</td>
-                <td>{{ad.name}}</td>
+                
                 <td>{{ad.budget}}</td>  
                 
                 <td style="padding-left: 15rem;display: flex;">   
@@ -229,7 +229,7 @@
                   <tr>
                     <th scope="col">Campaign Name</th>
                     <th scope="col">Sponsor</th>
-                    <th scope="col">Ad Title</th>
+                    
                     <th scope="col">Budget</th>
                     <th scope="col">Requested</th>
                     <th scope="col" style="padding-left: 14rem;">Action</th>
@@ -245,7 +245,7 @@
         
                 <td>{{ad.campaign.name}}</td>
                 <td>{{ad.campaign.sponsors.company_name}}</td>
-                <td>{{ad.name}}</td>
+                
                 <td>{{ad.budget}}</td> 
                 {%if ad.negotiate_budget>ad.budget%} 
                 <td>{{ad.negotiate_budget}}</td>  
@@ -316,7 +316,7 @@
                   <tr>
                     <th scope="col">Campaign Name</th>
                     <th scope="col">Sponsor</th>
-                    <th scope="col">Ad</th>
+                    
                     <th scope="col">Budget</th>
                     <th scope="col">Final Payment</th>
                     <th scope="col">Status</th>
@@ -333,7 +333,7 @@
         
                 <td>{{ad.campaign.name}}</td>
                 <td>{{ad.campaign.sponsors.company_name}}</td>
-                <td>{{ad.name}}</td>
+                
                 <td>{{ad.budget}}</td> 
                 {%if ad.negotiate_budget>ad.budget%} 
                 <td>{{ad.negotiate_budget}}</td>  

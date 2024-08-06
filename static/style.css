@@ -1,5 +1,6 @@
 *{
     margin: 0px;
+    
 
 }
 
@@ -48,13 +49,13 @@
 
 body {
     font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
+    background-color: #f4f4f4bb;
     margin: 0;
     padding: 20px;
 }
 
 #campaign{
-    background-color: #fff;
+    background-color: #ffffffc2;
     border: 0px solid rgb(101, 99, 99);
     border-radius: 15px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -79,7 +80,7 @@ width: 102% !important;
 #inf_dash{
     width: 400px;
     min-height: 320px;
-    background-color: #f8f9fa;
+    background-color: #f8f9fac5;
     padding: 20px;
 
 }

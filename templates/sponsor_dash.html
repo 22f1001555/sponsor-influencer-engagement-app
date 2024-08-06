@@ -41,7 +41,7 @@
 
     
     <div style="margin: 2rem 0rem 5rem 1rem;">
-      <h1>Welcome, <span style="color: rgb(101, 101, 192);">{{user.company_name}}</span></h1>
+      <h2>Welcome, <span style="color: rgb(101, 101, 192);">{{user.company_name}}</span></h2>
       <h5 style="padding-top: 1rem;">Available Budget: {{user.budget}}</h5>
     </div>
 
@@ -136,9 +136,7 @@
             <td>{{ad.negotiate_budget}}</td>
             
              <td style="padding-left: 14rem;display: flex;">
-              <!-- <form action="{{url_for('ad_details',username=user.username,ad_id=ad.ad_id,camp_id=camp.campaign_id)}}" method="GET" style="display: flex;"> -->
                 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#viewad{{ad.ad_id}}">view</button>
-                <!-- </form> -->
                   <!-- view ad modal -->
 <div class="modal fade" id="viewad{{ad.ad_id}}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
   <div class="modal-dialog">
@@ -220,7 +218,7 @@
             </tr>
           </thead>
           {%else%}
-          <p>No completed Campaigns</p>
+          <p style="text-align: center;">No completed Campaigns</p>
           
         {%endif%}
         <tbody> 
