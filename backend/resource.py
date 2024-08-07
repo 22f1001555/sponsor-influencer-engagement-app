@@ -83,6 +83,7 @@ class Sponsorcampaigns(Resource):
             camp.budget=args['budget']
             camp.initial_budget=args['budget']
             camp.status=args['status']
+            camp.visibility=args['visibility']
             camp.goals=args['goals']
             db.session.commit()
             return camp,200

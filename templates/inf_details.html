@@ -11,6 +11,7 @@
         <p>Influencer Name: {{inf.f_name}} {{inf.l_name}}</p>
         <p>Category: {{inf.category.name}}</p>
         <p>Niche: {{inf.niche.name}}</p>
+        <p>Ratings: {{inf.rating|round(1)}}</p>
         <p>Subscribers: {{inf.subs}}</p>
         <p>Bio: {{inf.bio}}</p>
         <form action="{{url_for('inf_descriptions',username=user.username,inf_id=inf.influencer_id)}}" method="POST">
@@ -31,7 +32,7 @@
               </select>
             </div>
           </div>
-          <div style="margin:2rem 0rem 1rem 5rem;">
+          <div style="margin:2rem 0rem 1rem 8rem;">
         <button class="btn btn-success" type="submit">Request</button>
           </div>
     </div>
